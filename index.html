@@ -11,65 +11,48 @@ body { background: var(--bg); color: var(--text); padding-bottom: 110px; min-hei
 
 /* HEADER */
 header { background: #fff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #f3f4f6; height: 70px; }
-.logo-container img { height: 50px; cursor: pointer; object-fit: contain; }
+.logo-container img { height: 80px; cursor: pointer; object-fit: contain; }
 .btn-search-open { font-size: 22px; cursor: pointer; background: #f3f4f6; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
 
-/* TELAS - GARANTINDO TAMANHO */
+/* TELAS */
 .screen { display: none; padding: 20px; max-width: 600px; margin: 0 auto; min-height: calc(100vh - 155px); animation: fadeIn 0.2s ease; }
-.screen.active { display: block; }
+.screen.active { display: block !important; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 /* GRID E CARDS */
 .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .cat-item { background: var(--primary); color: white; padding: 25px; border-radius: 15px; text-align: center; font-weight: 800; cursor: pointer; }
-.hq-card { cursor: pointer; width: 100%; transition: transform 0.2s; }
-.hq-card:active { transform: scale(0.98); }
+.hq-card { cursor: pointer; width: 100%; transition: transform 0.2s; margin-bottom: 10px; }
 .hq-card img { width: 100%; height: 230px; border-radius: 15px; object-fit: cover; background: #eee; }
-
-/* LEITOR & COMENTARIOS */
-.reader-page { width: 100%; display: block; }
-.reader-nav-bottom { padding: 20px; display: flex; justify-content: space-between; gap: 10px; background: #f9fafb; }
-.comment-section { padding: 20px; background: #fff; border-top: 1px solid #eee; }
-.comment-card { display: flex; gap: 12px; margin-bottom: 15px; border-bottom: 1px solid #f3f4f6; padding-bottom: 10px; }
-.comment-avatar { width: 40px; height: 40px; border-radius: 50%; background: #eee; background-size: cover; background-position: center; flex-shrink: 0; }
-.comment-content h5 { font-size: 14px; font-weight: 800; }
-.cap-item { padding: 15px; background: #f9fafb; border-radius: 12px; margin-bottom: 8px; cursor: pointer; font-weight: 700; border: 1px solid #eee; }
-
-/* FORMULARIOS */
-input, textarea, select { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #ddd; margin: 8px 0; outline: none; font-size: 16px; }
-.btn-save { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 15px; width: 100%; font-weight: 800; cursor: pointer; margin-top: 10px; }
-.btn-light { background: #f3f4f6; color: black; border: none; padding: 10px 25px; border-radius: 10px; font-weight: 700; cursor: pointer; }
 
 /* NAV */
 .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; height: 85px; z-index: 2000; }
-.nav-item { display: flex; flex-direction: column; align-items: center; color: var(--gray); font-size: 12px; font-weight: 800; cursor: pointer; flex: 1; transition: 0.2s; }
+.nav-item { display: flex; flex-direction: column; align-items: center; color: var(--gray); font-size: 12px; font-weight: 800; cursor: pointer; flex: 1; }
 .nav-item.active { color: var(--primary); }
-.nav-item span { font-size: 26px; line-height: 1; display: block; margin-bottom: 4px; }
+.nav-item span { font-size: 26px; margin-bottom: 4px; }
+
+/* MODAL FULLSCREEN */
+.full-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 3000; display: none; padding: 20px; flex-direction: column; overflow-y: auto; }
+.full-modal.active { display: flex !important; }
+
+/* ESTILO ESTUDIO */
+.box-studio { background: #fff; border-radius: var(--radius); padding: 20px; margin-bottom: 15px; border: 1px solid #f0f0f0; }
+input, textarea, select { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #ddd; margin: 8px 0; font-size: 16px; outline: none; }
+.btn-save { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 15px; width: 100%; font-weight: 800; cursor: pointer; }
+.btn-light { background: #f3f4f6; color: black; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+.btn-danger { background: #fee2e2; color: #dc2626; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: 800; cursor: pointer; }
 
 /* PERFIL */
-.p-banner { height: 140px; border-radius: 20px; background: #f3f4f6; background-size: cover; background-position: center; }
-.p-avatar { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #fff; margin: -50px auto 10px; background: #eee; background-size: cover; background-position: center; }
-.box-studio { background: #fff; border-radius: var(--radius); padding: 20px; margin-bottom: 15px; border: 1px solid #f0f0f0; }
-
-/* MODAL BUSCA */
-#search-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 3000; display: none; padding: 20px; flex-direction: column; }
-#search-modal.active { display: flex; }
+.p-banner { height: 140px; border-radius: 20px; background: #eee; background-size: cover; background-position: center; }
+.p-avatar { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #fff; margin: -50px auto 10px; background: #ddd; background-size: cover; background-position: center; }
 </style>
 </head>
 <body>
 
 <header>
   <div class="logo-container" onclick="navTo('inicio')"><img src="logovyracomicsbeta.png" alt="Vyra"></div>
-  <div class="btn-search-open" onclick="toggleSearch(true)">🔍</div>
+  <div class="btn-search-open" onclick="navTo('search')">🔍</div>
 </header>
-
-<div id="search-modal">
-  <div style="display:flex; gap:10px; margin-bottom:20px;">
-    <input type="text" id="modal-search-input" placeholder="O que vamos ler hoje?" style="margin:0;">
-    <button class="btn-light" onclick="toggleSearch(false)">Voltar</button>
-  </div>
-  <div id="search-results" style="display:grid; grid-template-columns:1fr 1fr; gap:15px; overflow-y:auto;"></div>
-</div>
 
 <div id="inicio" class="screen active">
   <h3 style="margin-bottom:15px;">🔥 Bombando</h3>
@@ -77,11 +60,45 @@ input, textarea, select { width: 100%; padding: 14px; border-radius: 12px; borde
 </div>
 
 <div id="categorias" class="screen">
-  <h2 style="margin-bottom:20px;">Categorias</h2>
-  <div class="cat-grid">
+  <h2>Categorias</h2>
+  <div class="cat-grid" style="margin-top:20px;">
     <div class="cat-item">Ação</div><div class="cat-item">Aventura</div>
     <div class="cat-item">Comédia</div><div class="cat-item">Drama</div>
   </div>
+</div>
+
+<div id="estudio" class="screen">
+  <h2>Estúdio</h2>
+  <div class="box-studio" style="margin-top:15px;">
+    <h4>🚀 Nova Obra</h4>
+    <input type="text" id="st-name" placeholder="Título da Obra">
+    <input type="text" id="st-cover-url" placeholder="URL da Capa">
+    <button class="btn-save" onclick="createWork()">Criar Obra</button>
+  </div>
+
+  <h3 style="margin:20px 0 10px;">Suas HQs (Clique para editar)</h3>
+  <div id="studio-list" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;"></div>
+  
+  <div class="box-studio" style="margin-top:20px;">
+    <h4>⚙️ Detalhes e Capítulos</h4>
+    <select id="st-select" onchange="loadSynopsis()"></select>
+    <div style="display:grid; gap:10px; margin-top:10px;">
+        <button class="btn-light" onclick="navTo('sub-details')">📝 Editar Sinopse</button>
+        <button class="btn-light" onclick="navTo('sub-caps')">📖 Gerenciar Capítulos</button>
+    </div>
+  </div>
+</div>
+
+<div id="perfil" class="screen">
+  <div class="p-banner" id="view-banner"></div>
+  <div class="p-avatar" id="view-avatar"></div>
+  <div style="text-align:center;">
+    <h2 id="view-name">Carregando...</h2>
+    <p id="view-user" style="color:var(--gray);">@user</p>
+    <button class="btn-light" style="margin-top:10px;" onclick="navTo('edit-perfil')">Editar Perfil</button>
+  </div>
+  <h3 style="margin:20px 0 10px;">Minhas Obras</h3>
+  <div id="perfil-list" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;"></div>
 </div>
 
 <div id="obra-view" class="screen">
@@ -89,269 +106,307 @@ input, textarea, select { width: 100%; padding: 14px; border-radius: 12px; borde
   <div id="obra-content" style="margin-top:20px;"></div>
 </div>
 
-<div id="reader" class="screen" style="padding:0; max-width: 100%;">
-  <button onclick="window.history.back()" style="position:fixed; top:80px; left:10px; z-index:10;" class="btn-light">❮ Sair</button>
-  <div id="reader-pages"></div>
-  <div class="reader-nav-bottom" id="reader-nav"></div>
-  <div class="comment-section">
-    <h4>💬 Comentários</h4>
-    <textarea id="comment-input" placeholder="Escreva um comentário..." rows="2"></textarea>
-    <button class="btn-save" onclick="addComment()">Publicar Comentário</button>
-    <div id="comments-list" style="margin-top:20px;"></div>
-  </div>
-</div>
-
-<div id="estudio" class="screen">
-  <h2 style="margin-bottom:20px;">Estúdio</h2>
-  <div class="box-studio">
-    <h4>🚀 Nova Obra</h4>
-    <input type="text" id="st-name" placeholder="Título da Obra">
-    <input type="text" id="st-cover-url" placeholder="Link da Capa (URL)">
-    <button class="btn-save" onclick="createWork()">Criar Obra</button>
-  </div>
-  <div class="box-studio">
-    <h4>⚙️ Suas Obras</h4>
-    <select id="st-select" onchange="loadSynopsis()"></select>
-    <div style="margin-top:15px; display:grid; gap:10px;">
-      <button class="btn-light" onclick="navTo('sub-details')">📝 Editar Sinopse</button>
-      <button class="btn-light" onclick="navTo('sub-caps')">📖 Gerenciar Capítulos</button>
-    </div>
-  </div>
+<div id="sub-details" class="screen">
+    <button onclick="navTo('estudio')" class="btn-light">❮ Voltar</button>
+    <h3 style="margin:20px 0;">Editar Sinopse</h3>
+    <textarea id="st-synopsis" rows="6" placeholder="Escreva sobre sua história..."></textarea>
+    <button class="btn-save" onclick="saveSynopsis()">Salvar Sinopse</button>
 </div>
 
 <div id="sub-caps" class="screen">
-  <button onclick="navTo('estudio')" class="btn-light">❮ Voltar</button>
-  <h3 style="margin:20px 0;">Adicionar Capítulo</h3>
-  <input type="text" id="cap-name" placeholder="Nome do Cap (Ex: Cap 01)">
-  <textarea id="cap-pages-urls" placeholder="Cole os links das imagens (um por linha)" rows="6"></textarea>
-  <button class="btn-save" onclick="uploadChapter()">Salvar Capítulo</button>
-</div>
-
-<div id="sub-details" class="screen">
-  <button onclick="navTo('estudio')" class="btn-light">❮ Voltar</button>
-  <h3 style="margin:20px 0;">Sinopse</h3>
-  <textarea id="st-synopsis" placeholder="Sobre o que é sua história?..." rows="6"></textarea>
-  <button class="btn-save" onclick="saveSynopsis()">Salvar Sinopse</button>
-</div>
-
-<div id="perfil" class="screen">
-  <div class="p-banner" id="view-banner"></div>
-  <div class="p-avatar" id="view-avatar"></div>
-  <div style="text-align:center;">
-    <h2 id="view-name">...</h2>
-    <p id="view-user" style="color:var(--gray);">@usuario</p>
-    <button id="btn-edit-p" class="btn-light" style="margin-top:15px;" onclick="navTo('edit-perfil')">Editar Perfil</button>
-  </div>
-  <h3 style="margin:20px 0 10px;">Minhas Obras</h3>
-  <div id="perfil-list" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;"></div>
+    <button onclick="navTo('estudio')" class="btn-light">❮ Voltar</button>
+    <h3 style="margin:20px 0;">Novo Capítulo</h3>
+    <input type="text" id="cap-name" placeholder="Nome do Capítulo">
+    <textarea id="cap-pages-urls" rows="6" placeholder="URLs das imagens (uma por linha)"></textarea>
+    <button class="btn-save" onclick="uploadChapter()">Salvar Capítulo</button>
 </div>
 
 <div id="edit-perfil" class="screen">
-  <button onclick="window.history.back()" class="btn-light">❮ Cancelar</button>
-  <h3 style="margin:20px 0;">Editar Perfil</h3>
-  <input type="text" id="edit-name" placeholder="Seu Nome">
-  <input type="text" id="edit-user" placeholder="@seu_user">
-  <input type="text" id="edit-avatar-url" placeholder="Link da Foto de Perfil">
-  <input type="text" id="edit-banner-url" placeholder="Link do Banner">
-  <button class="btn-save" onclick="saveProfile()">Salvar Perfil</button>
+    <button onclick="navTo('perfil')" class="btn-light">❮ Voltar</button>
+    <h3 style="margin:20px 0;">Editar Perfil</h3>
+    <input type="text" id="edit-name" placeholder="Nome">
+    <input type="text" id="edit-user" placeholder="@usuario">
+    <input type="text" id="edit-avatar-url" placeholder="URL Foto">
+    <input type="text" id="edit-banner-url" placeholder="URL Banner">
+    <button class="btn-save" onclick="saveProfile()">Salvar</button>
+</div>
+
+<div id="edit-hq-modal" class="full-modal">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 id="edit-hq-title">Gerenciar HQ</h3>
+        <button class="btn-light" onclick="closeEditModal()">Fechar</button>
+    </div>
+    
+    <div class="box-studio">
+        <h4>🖼️ Editar Capa e Título</h4>
+        <input type="text" id="edit-hq-name" placeholder="Novo Título">
+        <input type="text" id="edit-hq-cover" placeholder="Nova URL da Capa">
+        <button class="btn-save" onclick="updateHqBasic()">Salvar Dados</button>
+    </div>
+
+    <div class="box-studio">
+        <h4>📖 Gerenciar Capítulos</h4>
+        <div id="modal-cap-list" style="margin-bottom:15px;"></div>
+        <input type="text" id="modal-cap-name" placeholder="Nome do Capítulo (Ex: Cap 01)">
+        <textarea id="modal-cap-urls" rows="4" placeholder="URLs das páginas (uma por linha)"></textarea>
+        <button class="btn-light" style="width:100%" onclick="addChapterFromModal()">+ Adicionar Capítulo</button>
+    </div>
+
+    <div class="box-studio">
+        <h4>👥 Personagens</h4>
+        <div id="char-list" style="margin-bottom:10px;"></div>
+        <input type="text" id="char-name" placeholder="Nome do Personagem">
+        <input type="text" id="char-desc" placeholder="Descrição">
+        <button class="btn-light" style="width:100%" onclick="addCharacter()">+ Adicionar Personagem</button>
+    </div>
+
+    <div style="margin-top:20px;">
+        <button class="btn-danger" onclick="deleteHq()">Excluir HQ Permanentemente</button>
+    </div>
 </div>
 
 <nav class="bottom-nav">
-  <div class="nav-item" id="nav-inicio" onclick="navTo('inicio')"><span>🏠</span>Início</div>
-  <div class="nav-item" id="nav-categorias" onclick="navTo('categorias')"><span>📋</span>Categorias</div>
-  <div class="nav-item" id="nav-estudio" onclick="navTo('estudio')"><span>🛠️</span>Estúdio</div>
-  <div class="nav-item" id="nav-perfil" onclick="navTo('perfil')"><span>👤</span>Perfil</div>
+  <div class="nav-item" onclick="navTo('inicio')"><span>🏠</span>Início</div>
+  <div class="nav-item" onclick="navTo('categorias')"><span>📋</span>Categorias</div>
+  <div class="nav-item" onclick="navTo('estudio')"><span>🛠️</span>Estúdio</div>
+  <div class="nav-item" onclick="navTo('perfil')"><span>👤</span>Perfil</div>
 </nav>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// --- COLE SEUS DADOS DO FIREBASE AQUI ---
+// --- COLE SUA CONFIGURAÇÃO DO FIREBASE AQUI ---
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_ID.firebaseapp.com",
-  projectId: "SEU_ID",
-  storageBucket: "SEU_ID.appspot.com",
-  messagingSenderId: "ID",
-  appId: "APP_ID"
+  apiKey: "AIzaSyC13L4n-_zsInLJCCWIPlXqnhrJCF9cKtY",
+  authDomain: "vyracomics.firebaseapp.com",
+  projectId: "vyracomics",
+  storageBucket: "vyracomics.firebasestorage.app",
+  messagingSenderId: "417185512301",
+  appId: "1:417185512301:web:5b318d5a8d16b77b523864"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let localDb, hqs = [], user = { name: "Novato", user: "@user", avatar: "", banner: "" };
-let currentHqId, currentCapIdx;
+let hqs = [], localDb, editingHqIdx;
+let user = { name: "Usuário", user: "@user", avatar: "", banner: "" };
 
-// Inicializa IndexedDB para dados de Login
 const req = indexedDB.open("VyraDB", 2);
-req.onsuccess = e => { 
-  localDb = e.target.result; 
-  loadUser();
-};
+req.onsuccess = e => { localDb = e.target.result; loadUser(); };
 req.onupgradeneeded = e => e.target.result.createObjectStore("data", {keyPath: "id"});
 
-// Sincronização em Tempo Real das HQs
 onSnapshot(doc(db, "vyracomics", "main"), (snap) => {
   if(snap.exists()) hqs = snap.data().hqs || [];
-  else setDoc(doc(db, "vyracomics", "main"), { hqs: [] });
   renderHome();
+  renderStudioList();
   handleRoute();
 });
 
-// --- FUNÇÕES GLOBAIS (window. para funcionar no HTML) ---
-window.navTo = (screen, query = "") => {
-  window.location.hash = screen + (query ? "?" + query : "");
-  window.scrollTo(0, 0);
-};
-
-window.toggleSearch = (open) => document.getElementById('search-modal').classList.toggle('active', open);
+window.navTo = (screen) => { window.location.hash = screen; };
 
 function handleRoute() {
   const hash = window.location.hash.replace('#', '') || 'inicio';
-  const [screen, query] = hash.split('?');
-  const params = new URLSearchParams(query);
-  
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  
-  const target = document.getElementById(screen);
+  const target = document.getElementById(hash);
   if(target) target.classList.add('active');
-  document.getElementById('nav-' + screen.split('-')[0])?.classList.add('active');
 
-  if(screen === 'perfil') renderProfile(params.get('u') || user.user);
-  if(screen === 'obra-view') renderObra(params.get('id'));
-  if(screen === 'reader') renderReader(params.get('id'), params.get('c'));
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  const menu = ['inicio','categorias','estudio','perfil'];
+  if(menu.includes(hash)) {
+      document.querySelectorAll('.nav-item')[menu.indexOf(hash)].classList.add('active');
+  }
+  if(hash === 'perfil') renderProfile();
 }
-window.onhashchange = handleRoute;
+window.addEventListener('hashchange', handleRoute);
 
-// Lógica de Renderização
-function renderHome() {
-  const list = document.getElementById('home-list');
-  if(list) list.innerHTML = hqs.map((h, i) => `
-    <div class="hq-card" onclick="navTo('obra-view', 'id=${i}')">
-      <img src="${h.cover}">
-      <p style="font-weight:800; margin-top:8px;">${h.name}</p>
-      <small style="color:var(--gray)">${h.authorHandle}</small>
-    </div>`).join('');
-  
-  const sel = document.getElementById('st-select');
-  if(sel) sel.innerHTML = hqs.map((h, i) => h.authorHandle === user.user ? `<option value="${i}">${h.name}</option>` : '').join('');
-}
+// ESTÚDIO E LISTA
+function renderStudioList() {
+    const list = document.getElementById('studio-list');
+    if(!list) return;
+    list.innerHTML = hqs.map((h, i) => h.authorHandle === user.user ? `
+        <div class="hq-card" onclick="openEditModal(${i})">
+            <img src="${h.cover}">
+            <p><b>${h.name}</b></p>
+            <small style="color:var(--primary)">Editar HQ</small>
+        </div>` : '').join('');
 
-function renderObra(id) {
-  const h = hqs[id]; if(!h) return;
-  document.getElementById('obra-content').innerHTML = `
-    <img src="${h.cover}" style="width:100%; height:300px; object-fit:cover; border-radius:20px;">
-    <h2 style="margin:15px 0 5px;">${h.name}</h2>
-    <p style="color:var(--primary); font-weight:800; margin-bottom:15px;">Por ${h.authorHandle}</p>
-    <p style="color:#666; line-height:1.5;">${h.synopsis || 'Sem sinopse.'}</p>
-    <h3 style="margin:25px 0 10px;">Capítulos</h3>
-    ${h.chapters.map((c, i) => `<div class="cap-item" onclick="navTo('reader', 'id=${id}&c=${i}')">${c.name}</div>`).join('') || 'Em breve.'}
-  `;
+    const sel = document.getElementById('st-select');
+    if(sel) sel.innerHTML = hqs.map((h, i) => h.authorHandle === user.user ? `<option value="${i}">${h.name}</option>` : '').join('');
 }
 
-function renderReader(hqId, capIdx) {
-  currentHqId = hqId; currentCapIdx = parseInt(capIdx);
-  const hq = hqs[hqId]; const cap = hq.chapters[capIdx];
-  document.getElementById('reader-pages').innerHTML = cap.pages.map(p => `<img src="${p}" class="reader-page">`).join('');
-  
-  const hasPrev = currentCapIdx > 0;
-  const hasNext = currentCapIdx < hq.chapters.length - 1;
-  document.getElementById('reader-nav').innerHTML = `
-    <button class="btn-light" style="${!hasPrev?'visibility:hidden':''}" onclick="navTo('reader', 'id=${hqId}&c=${currentCapIdx-1}')">Anterior</button>
-    <button class="btn-light" style="${!hasNext?'visibility:hidden':''}" onclick="navTo('reader', 'id=${hqId}&c=${currentCapIdx+1}')">Próximo</button>
-  `;
-  renderComments();
+// MODAL DE EDIÇÃO (PERSONAGEM, CAPA, CAPITULOS)
+window.openEditModal = (idx) => {
+    editingHqIdx = idx;
+    const h = hqs[idx];
+    document.getElementById('edit-hq-name').value = h.name;
+    document.getElementById('edit-hq-cover').value = h.cover;
+    renderCharacters();
+    renderModalChapters();
+    document.getElementById('edit-hq-modal').classList.add('active');
+};
+
+window.closeEditModal = () => document.getElementById('edit-hq-modal').classList.remove('active');
+
+window.updateHqBasic = async () => {
+    hqs[editingHqIdx].name = document.getElementById('edit-hq-name').value;
+    hqs[editingHqIdx].cover = document.getElementById('edit-hq-cover').value;
+    await setDoc(doc(db, "vyracomics", "main"), { hqs });
+    alert("HQ Atualizada!");
+};
+
+window.addCharacter = async () => {
+    const name = document.getElementById('char-name').value;
+    const desc = document.getElementById('char-desc').value;
+    if(!name) return;
+    if(!hqs[editingHqIdx].characters) hqs[editingHqIdx].characters = [];
+    hqs[editingHqIdx].characters.push({name, desc});
+    await setDoc(doc(db, "vyracomics", "main"), { hqs });
+    renderCharacters();
+    document.getElementById('char-name').value = "";
+    document.getElementById('char-desc').value = "";
+};
+
+function renderCharacters() {
+    const chars = hqs[editingHqIdx].characters || [];
+    document.getElementById('char-list').innerHTML = chars.map((c, i) => `
+        <div style="background:#f3f4f6; padding:10px; border-radius:10px; margin-bottom:5px; display:flex; justify-content:space-between;">
+            <span><b>${c.name}</b></span>
+            <button onclick="removeChar(${i})" style="border:none; color:red; background:none; cursor:pointer;">✖</button>
+        </div>`).join('');
 }
 
-function renderComments() {
-  const cap = hqs[currentHqId]?.chapters[currentCapIdx];
-  document.getElementById('comments-list').innerHTML = (cap?.comments || []).map(c => `
-    <div class="comment-card">
-      <div class="comment-avatar" style="background-image:url(${c.avatar})"></div>
-      <div class="comment-content">
-        <h5>${c.name} <span style="font-weight:400; font-size:11px; color:gray;">• ${c.date}</span></h5>
-        <p>${c.text}</p>
-      </div>
-    </div>`).reverse().join('');
+window.removeChar = async (i) => {
+    hqs[editingHqIdx].characters.splice(i, 1);
+    await setDoc(doc(db, "vyracomics", "main"), { hqs });
+    renderCharacters();
+};
+
+// CAPITULOS NO MODAL
+function renderModalChapters() {
+    const caps = hqs[editingHqIdx].chapters || [];
+    document.getElementById('modal-cap-list').innerHTML = caps.map((c, i) => `
+        <div style="padding:10px; border:1px solid #eee; border-radius:10px; margin-bottom:5px; display:flex; justify-content:space-between;">
+            <span>${c.name}</span>
+            <button onclick="removeCap(${i})" style="border:none; color:red; background:none; cursor:pointer;">Excluir</button>
+        </div>`).join('');
 }
 
-// Ações do Estúdio
+window.addChapterFromModal = async () => {
+    const name = document.getElementById('modal-cap-name').value;
+    const urls = document.getElementById('modal-cap-urls').value.split('\n').filter(u => u.trim());
+    if(!name || urls.length === 0) return alert("Preencha os campos!");
+    hqs[editingHqIdx].chapters.push({name, pages: urls, comments: []});
+    await setDoc(doc(db, "vyracomics", "main"), { hqs });
+    renderModalChapters();
+    document.getElementById('modal-cap-name').value = "";
+    document.getElementById('modal-cap-urls').value = "";
+};
+
+window.removeCap = async (i) => {
+    if(confirm("Excluir este capítulo?")) {
+        hqs[editingHqIdx].chapters.splice(i, 1);
+        await setDoc(doc(db, "vyracomics", "main"), { hqs });
+        renderModalChapters();
+    }
+};
+
+window.deleteHq = async () => {
+    if(confirm("DELETAR HQ PARA SEMPRE?")) {
+        hqs.splice(editingHqIdx, 1);
+        await setDoc(doc(db, "vyracomics", "main"), { hqs });
+        closeEditModal();
+    }
+};
+
+// ACOES ORIGINAIS
 window.createWork = async () => {
-  const name = document.getElementById('st-name').value;
-  const cover = document.getElementById('st-cover-url').value;
-  if(!name || !cover) return alert("Preencha tudo!");
-  hqs.push({ name, cover, synopsis: "", authorHandle: user.user, chapters: [] });
-  await setDoc(doc(db, "vyracomics", "main"), { hqs });
-  alert("Obra Criada!");
+    const name = document.getElementById('st-name').value;
+    const cover = document.getElementById('st-cover-url').value;
+    if(!name || !cover) return alert("Preencha os campos!");
+    hqs.push({ name, cover, synopsis: "", authorHandle: user.user, chapters: [], characters: [] });
+    await setDoc(doc(db, "vyracomics", "main"), { hqs });
+    alert("Criada!");
+    document.getElementById('st-name').value = "";
+    document.getElementById('st-cover-url').value = "";
 };
 
 window.uploadChapter = async () => {
-  const i = document.getElementById('st-select').value;
-  const name = document.getElementById('cap-name').value;
-  const pages = document.getElementById('cap-pages-urls').value.split('\n').filter(p => p.trim());
-  if(!name || pages.length === 0) return alert("Erro nos dados!");
-  hqs[i].chapters.push({ name, pages, comments: [] });
-  await setDoc(doc(db, "vyracomics", "main"), { hqs });
-  alert("Capítulo Sincronizado!");
-  navTo('estudio');
+    const i = document.getElementById('st-select').value;
+    const name = document.getElementById('cap-name').value;
+    const pages = document.getElementById('cap-pages-urls').value.split('\n').filter(p => p.trim());
+    hqs[i].chapters.push({ name, pages, comments: [] });
+    await setDoc(doc(db, "vyracomics", "main"), { hqs });
+    alert("Capítulo Salvo!");
+    navTo('estudio');
 };
 
-window.addComment = async () => {
-  const txt = document.getElementById('comment-input').value;
-  if(!txt.trim()) return;
-  hqs[currentHqId].chapters[currentCapIdx].comments.push({
-    name: user.name, avatar: user.avatar, text: txt, date: new Date().toLocaleDateString()
-  });
-  await setDoc(doc(db, "vyracomics", "main"), { hqs });
-  document.getElementById('comment-input').value = "";
+function renderHome() {
+    const list = document.getElementById('home-list');
+    if(list) list.innerHTML = hqs.map((h, i) => `
+        <div class="hq-card" onclick="renderObraView(${i})">
+            <img src="${h.cover}">
+            <p><b>${h.name}</b></p>
+            <small>${h.authorHandle}</small>
+        </div>`).join('');
+}
+
+window.renderObraView = (id) => {
+    const h = hqs[id];
+    document.getElementById('obra-content').innerHTML = `
+        <img src="${h.cover}" style="width:100%; border-radius:20px;">
+        <h2 style="margin-top:15px;">${h.name}</h2>
+        <p style="color:var(--primary); font-weight:bold;">${h.authorHandle}</p>
+        <p style="margin-top:10px; color:#666;">${h.synopsis || 'Sem sinopse.'}</p>
+        <h3 style="margin-top:20px;">Capítulos</h3>
+        ${h.chapters.map(c => `<div class="cap-item">${c.name}</div>`).join('') || 'Em breve'}
+    `;
+    navTo('obra-view');
 };
 
-// Perfil Local (IndexedDB)
 window.saveProfile = () => {
-  user.name = document.getElementById('edit-name').value;
-  user.user = document.getElementById('edit-user').value;
-  user.avatar = document.getElementById('edit-avatar-url').value;
-  user.banner = document.getElementById('edit-banner-url').value;
-  localDb.transaction("data", "readwrite").objectStore("data").put({id:"user", ...user});
-  navTo('perfil');
+    user.name = document.getElementById('edit-name').value;
+    user.user = document.getElementById('edit-user').value;
+    user.avatar = document.getElementById('edit-avatar-url').value;
+    user.banner = document.getElementById('edit-banner-url').value;
+    localDb.transaction("data", "readwrite").objectStore("data").put({id:"user", ...user});
+    alert("Perfil Salvo!");
+    navTo('perfil');
 };
 
 function loadUser() {
-  localDb.transaction("data").objectStore("data").get("user").onsuccess = e => {
-    if(e.target.result) user = e.target.result;
-    handleRoute();
-  };
+    localDb.transaction("data").objectStore("data").get("user").onsuccess = e => {
+        if(e.target.result) { user = e.target.result; renderProfile(); }
+    };
 }
 
-function renderProfile(handle) {
-  const isMe = handle === user.user;
-  document.getElementById('view-name').innerText = isMe ? user.name : "Autor";
-  document.getElementById('view-user').innerText = handle;
-  document.getElementById('view-avatar').style.backgroundImage = `url(${isMe ? user.avatar : ''})`;
-  document.getElementById('view-banner').style.backgroundImage = `url(${isMe ? user.banner : ''})`;
-  document.getElementById('btn-edit-p').style.display = isMe ? 'inline-block' : 'none';
-  
-  const myHqs = hqs.filter(h => h.authorHandle === handle);
-  document.getElementById('perfil-list').innerHTML = myHqs.map(h => `
-    <div class="hq-card" onclick="navTo('obra-view', 'id=${hqs.indexOf(h)}')">
-      <img src="${h.cover}">
-      <p><b>${h.name}</b></p>
-    </div>`).join('');
+function renderProfile() {
+    document.getElementById('view-name').innerText = user.name;
+    document.getElementById('view-user').innerText = user.user;
+    document.getElementById('view-avatar').style.backgroundImage = `url(${user.avatar})`;
+    document.getElementById('view-banner').style.backgroundImage = `url(${user.banner})`;
+    const myHqs = hqs.filter(h => h.authorHandle === user.user);
+    document.getElementById('perfil-list').innerHTML = myHqs.map(h => `
+        <div class="hq-card" onclick="renderObraView(${hqs.indexOf(h)})">
+            <img src="${h.cover}">
+            <p><b>${h.name}</b></p>
+        </div>`).join('');
 }
-
-window.loadSynopsis = () => {
-  const i = document.getElementById('st-select').value;
-  document.getElementById('st-synopsis').value = hqs[i]?.synopsis || "";
-};
 
 window.saveSynopsis = async () => {
-  const i = document.getElementById('st-select').value;
-  hqs[i].synopsis = document.getElementById('st-synopsis').value;
-  await setDoc(doc(db, "vyracomics", "main"), { hqs });
-  alert("Sinopse Atualizada!");
+    const i = document.getElementById('st-select').value;
+    hqs[i].synopsis = document.getElementById('st-synopsis').value;
+    await setDoc(doc(db, "vyracomics", "main"), { hqs });
+    alert("Sinopse Salva!");
+    navTo('estudio');
 };
+
+window.loadSynopsis = () => {
+    const i = document.getElementById('st-select').value;
+    document.getElementById('st-synopsis').value = hqs[i]?.synopsis || "";
+};
+
+handleRoute();
 </script>
 </body>
 </html>
