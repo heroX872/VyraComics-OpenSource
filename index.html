@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>VyraComics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-container" onclick="navTo('inicio')">
+    <img src="images/logovyracomicsbeta.png" alt="VyraComics" loading="eager">
+  </div>
+</header>
+
+<!-- TOASTS -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ═══════════ TELA: INÍCIO ═══════════ -->
+<div id="inicio" class="screen active">
+
+  <div class="hero-strip">
+    <h1>LEIA.<br><em>SINTA.</em><br>VIVA.</h1>
+    <p>As melhores HQs do Brasil em um só lugar</p>
+  </div>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input
+      type="search"
+      id="search-input"
+      placeholder="Buscar HQs..."
+      oninput="filterHome(this.value)"
+      autocomplete="off"
+    >
+    <button class="search-clear" onclick="clearSearch()">✕</button>
+  </div>
+
+  <div class="section-title">🔥 Bombando <span class="tag">HOT</span></div>
+  <div id="home-list" class="hq-grid">
+    <div class="skeleton-card">
+      <div class="skeleton-img skeleton-shimmer"></div>
+      <div class="skeleton-body">
+        <div class="skeleton-line skeleton-shimmer" style="height:13px; width:75%; margin-bottom:6px;"></div>
+        <div class="skeleton-line skeleton-shimmer" style="height:11px; width:45%;"></div>
+      </div>
+    </div>
+    <div class="skeleton-card">
+      <div class="skeleton-img skeleton-shimmer"></div>
+      <div class="skeleton-body">
+        <div class="skeleton-line skeleton-shimmer" style="height:13px; width:80%; margin-bottom:6px;"></div>
+        <div class="skeleton-line skeleton-shimmer" style="height:11px; width:50%;"></div>
+      </div>
+    </div>
+    <div class="skeleton-card">
+      <div class="skeleton-img skeleton-shimmer"></div>
+      <div class="skeleton-body">
+        <div class="skeleton-line skeleton-shimmer" style="height:13px; width:60%; margin-bottom:6px;"></div>
+        <div class="skeleton-line skeleton-shimmer" style="height:11px; width:40%;"></div>
+      </div>
+    </div>
+    <div class="skeleton-card">
+      <div class="skeleton-img skeleton-shimmer"></div>
+      <div class="skeleton-body">
+        <div class="skeleton-line skeleton-shimmer" style="height:13px; width:70%; margin-bottom:6px;"></div>
+        <div class="skeleton-line skeleton-shimmer" style="height:11px; width:55%;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ TELA: CATEGORIAS ═══════════ -->
+<div id="categorias" class="screen">
+  <div class="section-title">📋 Categorias</div>
+  <div class="cat-grid">
+    <div class="cat-item"><span>⚔️ Ação</span></div>
+    <div class="cat-item"><span>🌎 Aventura</span></div>
+    <div class="cat-item"><span>😂 Comédia</span></div>
+    <div class="cat-item"><span>🎭 Drama</span></div>
+  </div>
+</div>
+
+<!-- ═══════════ TELA: ESTÚDIO ═══════════ -->
+<div id="estudio" class="screen">
+  <div class="section-title">🛠️ Estúdio</div>
+
+  <div class="box-studio">
+    <div class="box-title">🚀 Nova Obra</div>
+    <input type="text" id="st-name" placeholder="Título da HQ">
+    <label class="input-label">Gênero:</label>
+    <select id="st-genre">
+      <option value="">Selecione o gênero</option>
+      <option value="acao">⚔️ Ação</option>
+      <option value="aventura">🌎 Aventura</option>
+      <option value="comedia">😂 Comédia</option>
+      <option value="drama">🎭 Drama</option>
+    </select>
+    <label class="input-label">Capa da HQ:</label>
+    <input type="file" id="st-cover-file" accept="image/*">
+    <button class="btn-primary" id="btn-create" style="margin-top:14px;" onclick="createWork()">+ Criar Obra</button>
+  </div>
+
+  <div class="section-title" style="font-size:20px; margin-top:4px;">Suas HQs</div>
+  <div id="studio-list" class="hq-grid" style="margin-bottom:20px;"></div>
+
+  <div class="box-studio">
+    <div class="box-title">📝 Editar Sinopse</div>
+    <select id="st-select" onchange="loadSynopsis()"></select>
+    <button class="btn-light" style="width:100%; margin-top:10px;" onclick="navTo('sub-details')">Abrir Editor</button>
+  </div>
+</div>
+
+<!-- ═══════════ TELA: PERFIL ═══════════ -->
+<div id="perfil" class="screen">
+  <div class="p-banner" id="view-banner"></div>
+  <div class="p-avatar" id="view-avatar"></div>
+  <div style="text-align:center; margin-bottom:24px;">
+    <div class="profile-name" id="view-name">Carregando...</div>
+    <div class="profile-handle" id="view-user">@user</div>
+    <button class="btn-light" style="margin-top:14px;" onclick="navTo('edit-perfil')">Editar Perfil</button>
+  </div>
+  <div class="section-title" style="font-size:20px;">Minhas Obras</div>
+  <div id="perfil-list" class="hq-grid"></div>
+</div>
+
+<!-- ═══════════ TELA: OBRA VIEW ═══════════ -->
+<div id="obra-view" class="screen">
+  <button onclick="navTo('inicio')" class="btn-light" style="margin-bottom:18px;">❮ Voltar</button>
+  <div id="obra-content"></div>
+</div>
+
+<!-- ═══════════ TELA: EDITAR SINOPSE ═══════════ -->
+<div id="sub-details" class="screen">
+  <button onclick="navTo('estudio')" class="btn-light" style="margin-bottom:20px;">❮ Voltar</button>
+  <div class="box-studio">
+    <div class="box-title">📝 Sinopse</div>
+    <textarea id="st-synopsis" rows="7" placeholder="Escreva sobre sua história..."></textarea>
+    <button class="btn-primary" style="margin-top:10px;" onclick="saveSynopsis()">Salvar Sinopse</button>
+  </div>
+</div>
+
+<!-- ═══════════ TELA: EDITAR PERFIL ═══════════ -->
+<div id="edit-perfil" class="screen">
+  <button onclick="navTo('perfil')" class="btn-light" style="margin-bottom:20px;">❮ Voltar</button>
+  <div class="box-studio">
+    <div class="box-title">👤 Editar Perfil</div>
+    <input type="text" id="edit-name" placeholder="Seu nome">
+    <input type="text" id="edit-user" placeholder="@usuario">
+    <label class="input-label">Foto de perfil:</label>
+    <input type="file" id="edit-avatar-file" accept="image/*">
+    <label class="input-label">Banner:</label>
+    <input type="file" id="edit-banner-file" accept="image/*">
+    <button class="btn-primary" id="btn-save-profile" style="margin-top:14px;" onclick="saveProfile()">Salvar Perfil</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL: GERENCIAR HQ ═══════════ -->
+<div id="edit-hq-modal" class="full-modal">
+  <div class="modal-header">
+    <span class="modal-title" id="edit-hq-title">Gerenciar HQ</span>
+    <button class="btn-light" onclick="closeEditModal()">✕ Fechar</button>
+  </div>
+
+  <div class="box-studio">
+    <div class="box-title">🖼️ Capa &amp; Título</div>
+    <input type="text" id="edit-hq-name" placeholder="Novo título">
+    <label class="input-label">Trocar capa:</label>
+    <input type="file" id="edit-hq-cover-file" accept="image/*">
+    <button class="btn-primary" id="btn-update-hq" style="margin-top:14px;" onclick="updateHqBasic()">Salvar Alterações</button>
+  </div>
+
+  <div class="box-studio">
+    <div class="box-title">📖 Capítulos</div>
+    <div id="modal-cap-list" style="margin-bottom:14px;"></div>
+    <input type="text" id="modal-cap-name" placeholder="Nome do capítulo">
+    <label class="input-label">Páginas (múltiplas imagens):</label>
+    <input type="file" id="modal-cap-files" accept="image/*" multiple>
+    <button class="btn-light" id="btn-add-cap" style="width:100%; margin-top:12px;" onclick="addChapterFromModal()">+ Adicionar Capítulo</button>
+  </div>
+
+  <button class="btn-danger" onclick="deleteHq()">🗑️ Excluir esta HQ</button>
+</div>
+
+<!-- ═══════════ MODAL: LEITOR ═══════════ -->
+<div id="reader-modal">
+  <div class="reader-header">
+    <button class="reader-back" onclick="closeReader()">❮</button>
+    <div class="reader-info">
+      <div class="reader-hq-name" id="reader-hq-name"></div>
+      <div class="reader-cap-name" id="reader-cap-name"></div>
+    </div>
+  </div>
+
+  <div class="reader-progress-wrap">
+    <div id="reader-progress"></div>
+  </div>
+
+  <div class="swipe-hint prev" id="swipe-hint-prev">❮<br>ANTERIOR</div>
+  <div class="swipe-hint next" id="swipe-hint-next">PRÓXIMO<br>❯</div>
+
+  <div class="reader-pages" id="reader-pages"></div>
+
+  <div class="reader-footer">
+    <button class="reader-nav-btn" id="reader-prev" onclick="changeChapter(-1)">❮ Anterior</button>
+    <div class="reader-counter" id="reader-counter">1 / 1</div>
+    <button class="reader-nav-btn" id="reader-next" onclick="changeChapter(1)">Próximo ❯</button>
+  </div>
+</div>
+
+<!-- ═══════════ BOTTOM NAV ═══════════ -->
+<nav class="bottom-nav">
+  <div class="nav-item active" onclick="navTo('inicio')">
+    <span class="nav-icon">🏠</span><span>Início</span>
+  </div>
+  <div class="nav-item" onclick="navTo('categorias')">
+    <span class="nav-icon">📋</span><span>Explorar</span>
+  </div>
+  <div class="nav-item" onclick="navTo('estudio')">
+    <span class="nav-icon">🛠️</span><span>Estúdio</span>
+  </div>
+  <div class="nav-item" onclick="navTo('perfil')">
+    <span class="nav-icon">👤</span><span>Perfil</span>
+  </div>
+</nav>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
