@@ -1,21 +1,11 @@
-import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, onSnapshot }
-                           from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+// ── Configuração Supabase ──────────────────────────────────────
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const firebaseConfig = {
-  apiKey:            "AIzaSyC13L4n-_zsInLJCCWIPlXqnhrJCF9cKtY",
-  authDomain:        "vyracomics.firebaseapp.com",
-  projectId:         "vyracomics",
-  storageBucket:     "vyracomics.firebasestorage.app",
-  messagingSenderId: "417185512301",
-  appId:             "1:417185512301:web:5b318d5a8d16b77b523864"
-};
-
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+const SUPABASE_URL = "https://zsjnoyairyepbsgdhoeu.supabase.co";
+const SUPABASE_KEY = "sb_publishable_wWbgwzExm50q-iGB5GHlrA_I_T5RX2H";
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ── ID anônimo do usuário ──────────────────────────────────────
-// TODO (auth): substituir por auth.currentUser.uid
 const USER_ID = (() => {
   let uid = localStorage.getItem('vyra_uid');
   if (!uid) { uid = crypto.randomUUID(); localStorage.setItem('vyra_uid', uid); }
@@ -40,10 +30,12 @@ const toBase64 = file => new Promise((res, rej) => {
 
 window.toast = (msg, type = 'info') => {
   const icons = { success: '✓', error: '✕', info: 'ℹ' };
+  const container = document.getElementById('toast-container');
+  if (!container) return;
   const el = document.createElement('div');
   el.className = `toast ${type}`;
   el.innerHTML = `<span class="toast-icon">${icons[type]}</span><span>${msg}</span>`;
-  document.getElementById('toast-container').appendChild(el);
+  container.appendChild(el);
   setTimeout(() => el.remove(), 3000);
 };
 
@@ -54,25 +46,62 @@ function btnLoading(id, loading, label) {
   btn.textContent = loading ? '⏳ Aguarde...' : label;
 }
 
-// ── Data Layer ─────────────────────────────────────────────────
-// Perfil:  Firestore → users/{USER_ID}
-// HQs:     Firestore → vyracomics/main (array único, temporário)
-// TODO (banco): quebrar em coleção hqs/{hqId} com subcolection chapters
-// TODO (auth):  trocar USER_ID por auth.currentUser.uid em todo o arquivo
+// ── Data Layer (Supabase) ──────────────────────────────────────
+
 async function saveHqs() {
-  await setDoc(doc(db, "vyracomics", "main"), { hqs });
+  // Nota: No Supabase, salvamos a linha específica em vez de um array global
+  const hq = hqs[editingHqIdx];
+  if (!hq) return;
+
+  const { error } = await supabase
+    .from('hqs')
+    .upsert({ 
+      id: hq.id, // Se tiver ID, atualiza. Se não, o Supabase ignora ou cria.
+      name: hq.name,
+      genre: hq.genre,
+      cover: hq.cover,
+      synopsis: hq.synopsis,
+      authorHandle: hq.authorHandle,
+      authorId: hq.authorId,
+      chapters: hq.chapters 
+    });
+
+  if (error) {
+    console.error(error);
+    toast("Erro ao salvar dados.", "error");
+  }
 }
 
-loadUser();
+// ── Inicialização e Listener Realtime ──────────────────────────
+async function init() {
+  await loadUser();
+  
+  // Busca inicial das HQs
+  const { data, error } = await supabase.from('hqs').select('*');
+  if (!error) {
+    hqs = data || [];
+    refreshUI();
+  }
 
-// ── Firebase listener ──────────────────────────────────────────
-onSnapshot(doc(db, "vyracomics", "main"), snap => {
-  hqs = snap.exists() ? (snap.data().hqs || []) : [];
+  // Listener Realtime (Substituto do onSnapshot)
+  supabase
+    .channel('public:hqs')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'hqs' }, async () => {
+      const { data } = await supabase.from('hqs').select('*');
+      hqs = data || [];
+      refreshUI();
+    })
+    .subscribe();
+}
+
+function refreshUI() {
   renderHome(hqs);
   renderStudioList();
   renderProfileList();
   handleRoute();
-});
+}
+
+init();
 
 // ── Navigation ─────────────────────────────────────────────────
 const NAV_MAP = { inicio: 0, categorias: 1, estudio: 2, perfil: 3 };
@@ -86,7 +115,8 @@ function handleRoute() {
   const hash = window.location.hash.replace('#', '') || 'inicio';
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById(hash) || document.getElementById('inicio');
-  target.classList.add('active');
+  if(target) target.classList.add('active');
+  
   document.querySelectorAll('.nav-item').forEach((el, i) =>
     el.classList.toggle('active', i === (NAV_MAP[hash] ?? -1))
   );
@@ -110,7 +140,7 @@ function buildCards(list) {
     return `<div class="empty-state"><div class="ei">📚</div><p>Nenhuma HQ encontrada.</p></div>`;
   }
   return list.map(h => {
-    const idx   = hqs.indexOf(h);
+    const idx   = hqs.findIndex(item => item.id === h.id);
     const genre = h.genre ? `<div class="genre-badge">${GENRE_LABELS[h.genre] || h.genre}</div>` : '';
     return `
       <div class="hq-card" onclick="renderObraView(${idx})">
@@ -136,7 +166,8 @@ window.filterHome = q => {
 };
 
 window.clearSearch = () => {
-  document.getElementById('search-input').value = '';
+  const input = document.getElementById('search-input');
+  if(input) input.value = '';
   renderHome(hqs);
 };
 
@@ -145,6 +176,7 @@ function renderStudioList() {
   const list = document.getElementById('studio-list');
   if (!list) return;
   const mine = hqs.filter(h => h.authorId === USER_ID);
+  
   list.innerHTML = mine.length
     ? hqs.map((h, i) => h.authorId !== USER_ID ? '' : `
         <div class="hq-card" onclick="openEditModal(${i})">
@@ -171,14 +203,26 @@ window.createWork = async () => {
   btnLoading('btn-create', true, '+ Criar Obra');
   try {
     const cover = await toBase64(file);
-    // TODO (banco): criar documento individual para a HQ
-    hqs.push({ name, genre, cover, synopsis: '', authorHandle: user.user, authorId: USER_ID, chapters: [] });
-    await saveHqs();
+    const newHq = { 
+        name, 
+        genre, 
+        cover, 
+        synopsis: '', 
+        authorHandle: user.user, 
+        authorId: USER_ID, 
+        chapters: [] 
+    };
+
+    const { data, error } = await supabase.from('hqs').insert([newHq]).select();
+    
+    if(error) throw error;
+
     document.getElementById('st-name').value      = '';
     document.getElementById('st-genre').value     = '';
     document.getElementById('st-cover-file').value = '';
     toast('HQ criada com sucesso!', 'success');
-  } catch {
+  } catch (err) {
+    console.error(err);
     toast('Erro ao criar HQ. Tente novamente.', 'error');
   } finally {
     btnLoading('btn-create', false, '+ Criar Obra');
@@ -204,6 +248,7 @@ window.updateHqBasic = async () => {
     hqs[editingHqIdx].name = name;
     const file = document.getElementById('edit-hq-cover-file').files[0];
     if (file) hqs[editingHqIdx].cover = await toBase64(file);
+    
     await saveHqs();
     toast('Alterações salvas!', 'success');
   } catch {
@@ -256,11 +301,14 @@ window.removeCap = async i => {
 
 window.deleteHq = async () => {
   if (!confirm('Deletar esta HQ permanentemente?')) return;
-  const name = hqs[editingHqIdx].name;
-  hqs.splice(editingHqIdx, 1);
-  await saveHqs();
-  closeEditModal();
-  toast(`"${name}" excluída.`, 'info');
+  const hqToDelete = hqs[editingHqIdx];
+  
+  const { error } = await supabase.from('hqs').delete().eq('id', hqToDelete.id);
+  
+  if (!error) {
+    closeEditModal();
+    toast(`"${hqToDelete.name}" excluída.`, 'info');
+  }
 };
 
 // ── Obra view ──────────────────────────────────────────────────
@@ -361,14 +409,20 @@ window.saveProfile = async () => {
     const bn = document.getElementById('edit-banner-file').files[0];
     if (av) user.avatar = await toBase64(av);
     if (bn) user.banner = await toBase64(bn);
-    // TODO (auth): substituir USER_ID por auth.currentUser.uid
-    await setDoc(doc(db, "users", USER_ID), user);
+
+    const { error } = await supabase
+        .from('users')
+        .upsert({ id: USER_ID, ...user });
+
+    if(error) throw error;
+
     renderProfile();
     renderStudioList();
     renderProfileList();
     toast('Perfil atualizado!', 'success');
     navTo('perfil');
-  } catch {
+  } catch (err) {
+    console.error(err);
     toast('Erro ao salvar perfil.', 'error');
   } finally {
     btnLoading('btn-save-profile', false, 'Salvar Perfil');
@@ -377,13 +431,15 @@ window.saveProfile = async () => {
 
 async function loadUser() {
   try {
-    // TODO (auth): substituir USER_ID por auth.currentUser.uid
-    const snap = await getDoc(doc(db, "users", USER_ID));
-    if (snap.exists()) user = snap.data();
-  } catch { /* sem perfil salvo ainda, usa defaults */ }
+    const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', USER_ID)
+        .single();
+    
+    if (data) user = data;
+  } catch (e) { }
   renderProfile();
-  renderStudioList();
-  renderProfileList();
 }
 
 function renderProfile() {
@@ -397,7 +453,10 @@ function renderProfile() {
 window.saveSynopsis = async () => {
   const i = document.getElementById('st-select').value;
   if (i === '') { toast('Selecione uma HQ primeiro.', 'error'); return; }
-  hqs[i].synopsis = document.getElementById('st-synopsis').value;
+  
+  editingHqIdx = parseInt(i);
+  hqs[editingHqIdx].synopsis = document.getElementById('st-synopsis').value;
+  
   await saveHqs();
   toast('Sinopse salva!', 'success');
   navTo('estudio');
@@ -408,18 +467,17 @@ window.loadSynopsis = () => {
   document.getElementById('st-synopsis').value = hqs[i]?.synopsis || '';
 };
 
-handleRoute();
-
-// ── Reader swipe (esquerda = próximo, direita = anterior) ──────
+// ── Reader swipe ───────────────────────────────────────────────
 (function () {
-  const pages    = document.getElementById('reader-pages');
+  const pages = document.getElementById('reader-pages');
+  if(!pages) return;
   const hintPrev = document.getElementById('swipe-hint-prev');
   const hintNext = document.getElementById('swipe-hint-next');
   let startX = 0, startY = 0;
 
   function hideHints() {
-    hintPrev.classList.remove('show');
-    hintNext.classList.remove('show');
+    if(hintPrev) hintPrev.classList.remove('show');
+    if(hintNext) hintNext.classList.remove('show');
   }
 
   pages.addEventListener('touchstart', e => {
@@ -433,9 +491,9 @@ handleRoute();
     if (Math.abs(dy) > Math.abs(dx) || Math.abs(dx) < 20) { hideHints(); return; }
 
     const total = hqs[readerHqIdx]?.chapters?.length ?? 0;
-    if (dx > 20 && readerCapIdx > 0)              { hintPrev.classList.add('show'); hintNext.classList.remove('show'); }
-    else if (dx < -20 && readerCapIdx < total - 1) { hintNext.classList.add('show'); hintPrev.classList.remove('show'); }
-    else                                            { hideHints(); }
+    if (dx > 20 && readerCapIdx > 0 && hintPrev) { hintPrev.classList.add('show'); if(hintNext) hintNext.classList.remove('show'); }
+    else if (dx < -20 && readerCapIdx < total - 1 && hintNext) { hintNext.classList.add('show'); if(hintPrev) hintPrev.classList.remove('show'); }
+    else { hideHints(); }
   }, { passive: true });
 
   pages.addEventListener('touchend', e => {
@@ -447,7 +505,6 @@ handleRoute();
   }, { passive: true });
 })();
 
-// Dica de primeira abertura do leitor
 function showReaderTip() {
   if (sessionStorage.getItem('readerTipSeen')) return;
   sessionStorage.setItem('readerTipSeen', '1');
@@ -457,4 +514,3 @@ function showReaderTip() {
   document.body.appendChild(tip);
   setTimeout(() => tip.remove(), 3200);
 }
-
