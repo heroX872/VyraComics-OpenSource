@@ -270,6 +270,8 @@ header::after {
   transition: transform 0.18s ease, border-color 0.2s, box-shadow 0.2s;
   box-shadow: 0 4px 18px rgba(0,0,0,0.5);
   animation: cardIn 0.4s ease both;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .hq-card:nth-child(1) { animation-delay: 0.04s; }
@@ -418,6 +420,8 @@ header::after {
   flex: 1;
   transition: color 0.2s;
   padding-top: 2px;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .nav-item.active { color: var(--purple-soft); }
@@ -636,6 +640,8 @@ label.input-label {
   justify-content: space-between;
   transition: all 0.18s;
   animation: cardIn 0.3s ease both;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .chapter-item:active {

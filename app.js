@@ -1,11 +1,11 @@
-// ── Configuração Supabase ──────────────────────────────────────
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-const SUPABASE_URL = "https://zsjnoyairyepbsgdhoeu.supabase.co";
-const SUPABASE_KEY = "sb_publishable_wWbgwzExm50q-iGB5GHlrA_I_T5RX2H";
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_URL = 'https://ihiuygpxoxttwmbwbpns.supabase.co'
+const SUPABASE_KEY = 'sb_publishable_Te0kRJCi7DbW21iEj9w6QA_iO9av2fR'
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 // ── ID anônimo do usuário ──────────────────────────────────────
+// TODO (auth): substituir por supabase.auth.getUser()
 const USER_ID = (() => {
   let uid = localStorage.getItem('vyra_uid');
   if (!uid) { uid = crypto.randomUUID(); localStorage.setItem('vyra_uid', uid); }
@@ -28,6 +28,14 @@ const toBase64 = file => new Promise((res, rej) => {
   r.onerror = e  => rej(e);
 });
 
+async function uploadAvatar(file, slot) {
+  const ext  = file.name.split('.').pop();
+  const path = `${USER_ID}/${slot}.${ext}`;
+  const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true });
+  if (error) throw new Error(error.message);
+  return supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+}
+
 window.toast = (msg, type = 'info') => {
   const icons = { success: '✓', error: '✕', info: 'ℹ' };
   const container = document.getElementById('toast-container');
@@ -46,62 +54,94 @@ function btnLoading(id, loading, label) {
   btn.textContent = loading ? '⏳ Aguarde...' : label;
 }
 
-// ── Data Layer (Supabase) ──────────────────────────────────────
+// ── Mapeamento Supabase ↔ estado local ─────────────────────────
+function rowToHq(row) {
+  return {
+    id:           row.id,
+    name:         row.name,
+    genre:        row.genre,
+    cover:        row.cover,
+    synopsis:     row.synopsis  || '',
+    authorHandle: row.author_handle,
+    authorId:     row.author_id,
+    chapters:     row.chapters  || []
+  };
+}
 
-async function saveHqs() {
-  // Nota: No Supabase, salvamos a linha específica em vez de um array global
-  const hq = hqs[editingHqIdx];
-  if (!hq) return;
-
-  const { error } = await supabase
+// ── Data Layer ─────────────────────────────────────────────────
+async function loadHqs() {
+  const { data, error } = await supabase
     .from('hqs')
-    .upsert({ 
-      id: hq.id, // Se tiver ID, atualiza. Se não, o Supabase ignora ou cria.
-      name: hq.name,
-      genre: hq.genre,
-      cover: hq.cover,
-      synopsis: hq.synopsis,
-      authorHandle: hq.authorHandle,
-      authorId: hq.authorId,
-      chapters: hq.chapters 
-    });
-
-  if (error) {
-    console.error(error);
-    toast("Erro ao salvar dados.", "error");
-  }
-}
-
-// ── Inicialização e Listener Realtime ──────────────────────────
-async function init() {
-  await loadUser();
-  
-  // Busca inicial das HQs
-  const { data, error } = await supabase.from('hqs').select('*');
-  if (!error) {
-    hqs = data || [];
-    refreshUI();
-  }
-
-  // Listener Realtime (Substituto do onSnapshot)
-  supabase
-    .channel('public:hqs')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'hqs' }, async () => {
-      const { data } = await supabase.from('hqs').select('*');
-      hqs = data || [];
-      refreshUI();
-    })
-    .subscribe();
-}
-
-function refreshUI() {
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) { console.error('loadHqs:', error.message); return; }
+  hqs = (data || []).map(rowToHq);
   renderHome(hqs);
   renderStudioList();
   renderProfileList();
   handleRoute();
 }
 
-init();
+async function insertHq(hq) {
+  const { error } = await supabase.from('hqs').insert({
+    id:            hq.id,
+    author_id:     hq.authorId,
+    author_handle: hq.authorHandle,
+    name:          hq.name,
+    genre:         hq.genre || null,
+    cover:         hq.cover,
+    synopsis:      hq.synopsis || '',
+    chapters:      hq.chapters || []
+  });
+  if (error) throw new Error(error.message);
+}
+
+async function updateHq(idx, fields) {
+  const { error } = await supabase
+    .from('hqs')
+    .update(fields)
+    .eq('id', hqs[idx].id);
+  if (error) throw new Error(error.message);
+}
+
+async function deleteHqById(id) {
+  const { error } = await supabase.from('hqs').delete().eq('id', id);
+  if (error) throw new Error(error.message);
+}
+
+async function loadUser() {
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', USER_ID)
+    .maybeSingle();
+  if (!error && data) {
+    user = {
+      name:   data.name,
+      user:   data.handle,
+      avatar: data.avatar || '',
+      banner: data.banner || ''
+    };
+  }
+  renderProfile();
+  renderStudioList();
+  renderProfileList();
+}
+
+async function saveUser() {
+  const { error } = await supabase.from('users').upsert({
+    id:     USER_ID,
+    name:   user.name,
+    handle: user.user,
+    avatar: user.avatar || null,
+    banner: user.banner || null
+  });
+  if (error) throw new Error(error.message);
+}
+
+// ── Inicialização ──────────────────────────────────────────────
+loadUser();
+loadHqs();
 
 // ── Navigation ─────────────────────────────────────────────────
 const NAV_MAP = { inicio: 0, categorias: 1, estudio: 2, perfil: 3 };
@@ -203,27 +243,25 @@ window.createWork = async () => {
   btnLoading('btn-create', true, '+ Criar Obra');
   try {
     const cover = await toBase64(file);
-    const newHq = { 
-        name, 
-        genre, 
-        cover, 
-        synopsis: '', 
-        authorHandle: user.user, 
-        authorId: USER_ID, 
-        chapters: [] 
+    const newHq = {
+      id: crypto.randomUUID(),
+      name, genre, cover,
+      synopsis:     '',
+      authorHandle: user.user,
+      authorId:     USER_ID,
+      chapters:     []
     };
-
-    const { data, error } = await supabase.from('hqs').insert([newHq]).select();
-    
-    if(error) throw error;
-
-    document.getElementById('st-name').value      = '';
-    document.getElementById('st-genre').value     = '';
+    await insertHq(newHq);
+    hqs.unshift(newHq);
+    document.getElementById('st-name').value       = '';
+    document.getElementById('st-genre').value      = '';
     document.getElementById('st-cover-file').value = '';
+    renderStudioList();
+    renderHome(hqs);
     toast('HQ criada com sucesso!', 'success');
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
     toast('Erro ao criar HQ. Tente novamente.', 'error');
+    console.error(e);
   } finally {
     btnLoading('btn-create', false, '+ Criar Obra');
   }
@@ -245,14 +283,17 @@ window.updateHqBasic = async () => {
 
   btnLoading('btn-update-hq', true, 'Salvar Alterações');
   try {
-    hqs[editingHqIdx].name = name;
+    const fields = { name };
     const file = document.getElementById('edit-hq-cover-file').files[0];
-    if (file) hqs[editingHqIdx].cover = await toBase64(file);
-    
-    await saveHqs();
+    if (file) fields.cover = await toBase64(file);
+    await updateHq(editingHqIdx, fields);
+    Object.assign(hqs[editingHqIdx], fields);
+    renderStudioList();
+    renderHome(hqs);
     toast('Alterações salvas!', 'success');
-  } catch {
+  } catch (e) {
     toast('Erro ao salvar. Tente novamente.', 'error');
+    console.error(e);
   } finally {
     btnLoading('btn-update-hq', false, 'Salvar Alterações');
   }
@@ -267,14 +308,16 @@ window.addChapterFromModal = async () => {
   try {
     const pages = [];
     for (const f of files) pages.push(await toBase64(f));
-    hqs[editingHqIdx].chapters.push({ name, pages });
-    await saveHqs();
+    const chapters = [...hqs[editingHqIdx].chapters, { name, pages }];
+    await updateHq(editingHqIdx, { chapters });
+    hqs[editingHqIdx].chapters = chapters;
     renderModalChapters();
-    document.getElementById('modal-cap-name').value   = '';
-    document.getElementById('modal-cap-files').value  = '';
+    document.getElementById('modal-cap-name').value  = '';
+    document.getElementById('modal-cap-files').value = '';
     toast(`Capítulo "${name}" adicionado!`, 'success');
-  } catch {
+  } catch (e) {
     toast('Erro ao adicionar capítulo.', 'error');
+    console.error(e);
   } finally {
     btnLoading('btn-add-cap', false, '+ Adicionar Capítulo');
   }
@@ -293,21 +336,31 @@ function renderModalChapters() {
 
 window.removeCap = async i => {
   const cap = hqs[editingHqIdx].chapters[i];
-  hqs[editingHqIdx].chapters.splice(i, 1);
-  await saveHqs();
-  renderModalChapters();
-  toast(`Capítulo "${cap.name}" removido.`, 'info');
+  const chapters = hqs[editingHqIdx].chapters.filter((_, j) => j !== i);
+  try {
+    await updateHq(editingHqIdx, { chapters });
+    hqs[editingHqIdx].chapters = chapters;
+    renderModalChapters();
+    toast(`Capítulo "${cap.name}" removido.`, 'info');
+  } catch (e) {
+    toast('Erro ao remover capítulo.', 'error');
+    console.error(e);
+  }
 };
 
 window.deleteHq = async () => {
   if (!confirm('Deletar esta HQ permanentemente?')) return;
-  const hqToDelete = hqs[editingHqIdx];
-  
-  const { error } = await supabase.from('hqs').delete().eq('id', hqToDelete.id);
-  
-  if (!error) {
+  const hq = hqs[editingHqIdx];
+  try {
+    await deleteHqById(hq.id);
+    hqs.splice(editingHqIdx, 1);
     closeEditModal();
-    toast(`"${hqToDelete.name}" excluída.`, 'info');
+    renderStudioList();
+    renderHome(hqs);
+    toast(`"${hq.name}" excluída.`, 'info');
+  } catch (e) {
+    toast('Erro ao excluir HQ.', 'error');
+    console.error(e);
   }
 };
 
@@ -407,40 +460,21 @@ window.saveProfile = async () => {
     user.user = handle;
     const av = document.getElementById('edit-avatar-file').files[0];
     const bn = document.getElementById('edit-banner-file').files[0];
-    if (av) user.avatar = await toBase64(av);
-    if (bn) user.banner = await toBase64(bn);
-
-    const { error } = await supabase
-        .from('users')
-        .upsert({ id: USER_ID, ...user });
-
-    if(error) throw error;
-
+    if (av) user.avatar = await uploadAvatar(av, 'avatar');
+    if (bn) user.banner = await uploadAvatar(bn, 'banner');
+    await saveUser();
     renderProfile();
     renderStudioList();
     renderProfileList();
     toast('Perfil atualizado!', 'success');
     navTo('perfil');
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
     toast('Erro ao salvar perfil.', 'error');
+    console.error(e);
   } finally {
     btnLoading('btn-save-profile', false, 'Salvar Perfil');
   }
 };
-
-async function loadUser() {
-  try {
-    const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', USER_ID)
-        .single();
-    
-    if (data) user = data;
-  } catch (e) { }
-  renderProfile();
-}
 
 function renderProfile() {
   document.getElementById('view-name').textContent = user.name;
@@ -453,13 +487,16 @@ function renderProfile() {
 window.saveSynopsis = async () => {
   const i = document.getElementById('st-select').value;
   if (i === '') { toast('Selecione uma HQ primeiro.', 'error'); return; }
-  
-  editingHqIdx = parseInt(i);
-  hqs[editingHqIdx].synopsis = document.getElementById('st-synopsis').value;
-  
-  await saveHqs();
-  toast('Sinopse salva!', 'success');
-  navTo('estudio');
+  const synopsis = document.getElementById('st-synopsis').value;
+  try {
+    await updateHq(Number(i), { synopsis });
+    hqs[i].synopsis = synopsis;
+    toast('Sinopse salva!', 'success');
+    navTo('estudio');
+  } catch (e) {
+    toast('Erro ao salvar sinopse.', 'error');
+    console.error(e);
+  }
 };
 
 window.loadSynopsis = () => {
@@ -467,7 +504,7 @@ window.loadSynopsis = () => {
   document.getElementById('st-synopsis').value = hqs[i]?.synopsis || '';
 };
 
-// ── Reader swipe ───────────────────────────────────────────────
+// ── Reader swipe (esquerda = próximo, direita = anterior) ──────
 (function () {
   const pages = document.getElementById('reader-pages');
   if(!pages) return;
@@ -491,9 +528,9 @@ window.loadSynopsis = () => {
     if (Math.abs(dy) > Math.abs(dx) || Math.abs(dx) < 20) { hideHints(); return; }
 
     const total = hqs[readerHqIdx]?.chapters?.length ?? 0;
-    if (dx > 20 && readerCapIdx > 0 && hintPrev) { hintPrev.classList.add('show'); if(hintNext) hintNext.classList.remove('show'); }
-    else if (dx < -20 && readerCapIdx < total - 1 && hintNext) { hintNext.classList.add('show'); if(hintPrev) hintPrev.classList.remove('show'); }
-    else { hideHints(); }
+    if (dx > 20 && readerCapIdx > 0)               { hintPrev.classList.add('show'); hintNext.classList.remove('show'); }
+    else if (dx < -20 && readerCapIdx < total - 1) { hintNext.classList.add('show'); hintPrev.classList.remove('show'); }
+    else                                            { hideHints(); }
   }, { passive: true });
 
   pages.addEventListener('touchend', e => {
