@@ -1,21 +1,17 @@
 /* ===== TOKENS ===== */
 :root {
-  --bg:          #c1c1c1;
-  --surface:     #7b7b7b;
-  --surface2:    #525252;
-  --border:      #777577;
-
+  --bg:          #0a0a0a;
+  --surface:     #141414;
+  --surface2:    #1e1e1e;
+  --border:      #2a2a2a;
   --purple:      #7c3aed;
   --purple-soft: #9d5cf6;
-  --purple-glow: rgba(124,58,237,0.25);
-  --purple-dim:  rgba(124,58,237,0.08);
-
-  --text:        #666666;
-  --muted:       #666666;
-
+  --purple-glow: rgba(124,58,237,0.45);
+  --purple-dim:  rgba(124,58,237,0.12);
+  --text:        #f0f0f0;
+  --muted:       #666;
   --danger:      #e53e3e;
   --success:     #22c55e;
-
   --nav-h:       72px;
   --header-h:    58px;
   --r:           14px;
