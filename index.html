@@ -12,7 +12,6 @@ body { background: var(--bg); color: var(--text); padding-bottom: 110px; min-hei
 /* HEADER */
 header { background: #fff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #f3f4f6; height: 70px; }
 .logo-container img { height: 80px; cursor: pointer; object-fit: contain; }
-.btn-search-open { font-size: 22px; cursor: pointer; background: #f3f4f6; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
 
 /* TELAS */
 .screen { display: none; padding: 20px; max-width: 600px; margin: 0 auto; min-height: calc(100vh - 155px); animation: fadeIn 0.2s ease; }
@@ -38,6 +37,7 @@ header { background: #fff; padding: 12px 20px; display: flex; justify-content: s
 /* ESTILO ESTUDIO */
 .box-studio { background: #fff; border-radius: var(--radius); padding: 20px; margin-bottom: 15px; border: 1px solid #f0f0f0; }
 input, textarea, select { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #ddd; margin: 8px 0; font-size: 16px; outline: none; }
+input[type="file"] { padding: 10px; background: #f9fafb; }
 .btn-save { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 15px; width: 100%; font-weight: 800; cursor: pointer; }
 .btn-light { background: #f3f4f6; color: black; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; }
 .btn-danger { background: #fee2e2; color: #dc2626; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: 800; cursor: pointer; }
@@ -51,7 +51,6 @@ input, textarea, select { width: 100%; padding: 14px; border-radius: 12px; borde
 
 <header>
   <div class="logo-container" onclick="navTo('inicio')"><img src="logovyracomicsbeta.png" alt="Vyra"></div>
-  <div class="btn-search-open" onclick="navTo('search')">🔍</div>
 </header>
 
 <div id="inicio" class="screen active">
@@ -72,19 +71,19 @@ input, textarea, select { width: 100%; padding: 14px; border-radius: 12px; borde
   <div class="box-studio" style="margin-top:15px;">
     <h4>🚀 Nova Obra</h4>
     <input type="text" id="st-name" placeholder="Título da Obra">
-    <input type="text" id="st-cover-url" placeholder="URL da Capa">
+    <p style="font-size:12px; color:gray; margin-top:5px;">Upload da Capa:</p>
+    <input type="file" id="st-cover-file" accept="image/*">
     <button class="btn-save" onclick="createWork()">Criar Obra</button>
   </div>
 
-  <h3 style="margin:20px 0 10px;">Suas HQs (Clique para editar)</h3>
+  <h3 style="margin:20px 0 10px;">Suas HQs</h3>
   <div id="studio-list" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;"></div>
   
   <div class="box-studio" style="margin-top:20px;">
-    <h4>⚙️ Detalhes e Capítulos</h4>
+    <h4>⚙️ Rápido</h4>
     <select id="st-select" onchange="loadSynopsis()"></select>
     <div style="display:grid; gap:10px; margin-top:10px;">
         <button class="btn-light" onclick="navTo('sub-details')">📝 Editar Sinopse</button>
-        <button class="btn-light" onclick="navTo('sub-caps')">📖 Gerenciar Capítulos</button>
     </div>
   </div>
 </div>
@@ -113,22 +112,16 @@ input, textarea, select { width: 100%; padding: 14px; border-radius: 12px; borde
     <button class="btn-save" onclick="saveSynopsis()">Salvar Sinopse</button>
 </div>
 
-<div id="sub-caps" class="screen">
-    <button onclick="navTo('estudio')" class="btn-light">❮ Voltar</button>
-    <h3 style="margin:20px 0;">Novo Capítulo</h3>
-    <input type="text" id="cap-name" placeholder="Nome do Capítulo">
-    <textarea id="cap-pages-urls" rows="6" placeholder="URLs das imagens (uma por linha)"></textarea>
-    <button class="btn-save" onclick="uploadChapter()">Salvar Capítulo</button>
-</div>
-
 <div id="edit-perfil" class="screen">
     <button onclick="navTo('perfil')" class="btn-light">❮ Voltar</button>
     <h3 style="margin:20px 0;">Editar Perfil</h3>
     <input type="text" id="edit-name" placeholder="Nome">
     <input type="text" id="edit-user" placeholder="@usuario">
-    <input type="text" id="edit-avatar-url" placeholder="URL Foto">
-    <input type="text" id="edit-banner-url" placeholder="URL Banner">
-    <button class="btn-save" onclick="saveProfile()">Salvar</button>
+    <p style="font-size:12px; color:gray; margin-top:10px;">Foto de Perfil:</p>
+    <input type="file" id="edit-avatar-file" accept="image/*">
+    <p style="font-size:12px; color:gray; margin-top:10px;">Banner:</p>
+    <input type="file" id="edit-banner-file" accept="image/*">
+    <button class="btn-save" onclick="saveProfile()">Salvar Perfil</button>
 </div>
 
 <div id="edit-hq-modal" class="full-modal">
@@ -140,29 +133,21 @@ input, textarea, select { width: 100%; padding: 14px; border-radius: 12px; borde
     <div class="box-studio">
         <h4>🖼️ Editar Capa e Título</h4>
         <input type="text" id="edit-hq-name" placeholder="Novo Título">
-        <input type="text" id="edit-hq-cover" placeholder="Nova URL da Capa">
-        <button class="btn-save" onclick="updateHqBasic()">Salvar Dados</button>
+        <p style="font-size:12px; color:gray;">Trocar Capa:</p>
+        <input type="file" id="edit-hq-cover-file" accept="image/*">
+        <button class="btn-save" onclick="updateHqBasic()">Salvar Alterações</button>
     </div>
 
     <div class="box-studio">
-        <h4>📖 Gerenciar Capítulos</h4>
+        <h4>📖 Capítulos</h4>
         <div id="modal-cap-list" style="margin-bottom:15px;"></div>
-        <input type="text" id="modal-cap-name" placeholder="Nome do Capítulo (Ex: Cap 01)">
-        <textarea id="modal-cap-urls" rows="4" placeholder="URLs das páginas (uma por linha)"></textarea>
+        <input type="text" id="modal-cap-name" placeholder="Nome do Cap">
+        <p style="font-size:12px; color:gray;">Upload das Páginas (Múltiplas):</p>
+        <input type="file" id="modal-cap-files" accept="image/*" multiple>
         <button class="btn-light" style="width:100%" onclick="addChapterFromModal()">+ Adicionar Capítulo</button>
     </div>
 
-    <div class="box-studio">
-        <h4>👥 Personagens</h4>
-        <div id="char-list" style="margin-bottom:10px;"></div>
-        <input type="text" id="char-name" placeholder="Nome do Personagem">
-        <input type="text" id="char-desc" placeholder="Descrição">
-        <button class="btn-light" style="width:100%" onclick="addCharacter()">+ Adicionar Personagem</button>
-    </div>
-
-    <div style="margin-top:20px;">
-        <button class="btn-danger" onclick="deleteHq()">Excluir HQ Permanentemente</button>
-    </div>
+    <button class="btn-danger" onclick="deleteHq()">Excluir HQ</button>
 </div>
 
 <nav class="bottom-nav">
@@ -176,7 +161,7 @@ input, textarea, select { width: 100%; padding: 14px; border-radius: 12px; borde
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// --- COLE SUA CONFIGURAÇÃO DO FIREBASE AQUI ---
+// --- COLE SUA CONFIGURAÇÃO AQUI ---
 const firebaseConfig = {
   apiKey: "AIzaSyC13L4n-_zsInLJCCWIPlXqnhrJCF9cKtY",
   authDomain: "vyracomics.firebaseapp.com",
@@ -191,6 +176,14 @@ const db = getFirestore(app);
 
 let hqs = [], localDb, editingHqIdx;
 let user = { name: "Usuário", user: "@user", avatar: "", banner: "" };
+
+// Converte arquivo para Base64
+const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
 
 const req = indexedDB.open("VyraDB", 2);
 req.onsuccess = e => { localDb = e.target.result; loadUser(); };
@@ -210,17 +203,10 @@ function handleRoute() {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById(hash);
   if(target) target.classList.add('active');
-
-  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-  const menu = ['inicio','categorias','estudio','perfil'];
-  if(menu.includes(hash)) {
-      document.querySelectorAll('.nav-item')[menu.indexOf(hash)].classList.add('active');
-  }
-  if(hash === 'perfil') renderProfile();
 }
 window.addEventListener('hashchange', handleRoute);
 
-// ESTÚDIO E LISTA
+// Estúdio
 function renderStudioList() {
     const list = document.getElementById('studio-list');
     if(!list) return;
@@ -228,126 +214,82 @@ function renderStudioList() {
         <div class="hq-card" onclick="openEditModal(${i})">
             <img src="${h.cover}">
             <p><b>${h.name}</b></p>
-            <small style="color:var(--primary)">Editar HQ</small>
         </div>` : '').join('');
-
     const sel = document.getElementById('st-select');
     if(sel) sel.innerHTML = hqs.map((h, i) => h.authorHandle === user.user ? `<option value="${i}">${h.name}</option>` : '').join('');
 }
 
-// MODAL DE EDIÇÃO (PERSONAGEM, CAPA, CAPITULOS)
 window.openEditModal = (idx) => {
     editingHqIdx = idx;
     const h = hqs[idx];
     document.getElementById('edit-hq-name').value = h.name;
-    document.getElementById('edit-hq-cover').value = h.cover;
-    renderCharacters();
     renderModalChapters();
     document.getElementById('edit-hq-modal').classList.add('active');
 };
 
 window.closeEditModal = () => document.getElementById('edit-hq-modal').classList.remove('active');
 
+window.createWork = async () => {
+    const name = document.getElementById('st-name').value;
+    const file = document.getElementById('st-cover-file').files[0];
+    if(!name || !file) return alert("Nome e Capa obrigatórios!");
+    const base64 = await toBase64(file);
+    hqs.push({ name, cover: base64, synopsis: "", authorHandle: user.user, chapters: [] });
+    await setDoc(doc(db, "vyracomics", "main"), { hqs });
+    alert("HQ Criada!");
+};
+
 window.updateHqBasic = async () => {
     hqs[editingHqIdx].name = document.getElementById('edit-hq-name').value;
-    hqs[editingHqIdx].cover = document.getElementById('edit-hq-cover').value;
+    const file = document.getElementById('edit-hq-cover-file').files[0];
+    if(file) hqs[editingHqIdx].cover = await toBase64(file);
     await setDoc(doc(db, "vyracomics", "main"), { hqs });
-    alert("HQ Atualizada!");
+    alert("Salvo!");
 };
-
-window.addCharacter = async () => {
-    const name = document.getElementById('char-name').value;
-    const desc = document.getElementById('char-desc').value;
-    if(!name) return;
-    if(!hqs[editingHqIdx].characters) hqs[editingHqIdx].characters = [];
-    hqs[editingHqIdx].characters.push({name, desc});
-    await setDoc(doc(db, "vyracomics", "main"), { hqs });
-    renderCharacters();
-    document.getElementById('char-name').value = "";
-    document.getElementById('char-desc').value = "";
-};
-
-function renderCharacters() {
-    const chars = hqs[editingHqIdx].characters || [];
-    document.getElementById('char-list').innerHTML = chars.map((c, i) => `
-        <div style="background:#f3f4f6; padding:10px; border-radius:10px; margin-bottom:5px; display:flex; justify-content:space-between;">
-            <span><b>${c.name}</b></span>
-            <button onclick="removeChar(${i})" style="border:none; color:red; background:none; cursor:pointer;">✖</button>
-        </div>`).join('');
-}
-
-window.removeChar = async (i) => {
-    hqs[editingHqIdx].characters.splice(i, 1);
-    await setDoc(doc(db, "vyracomics", "main"), { hqs });
-    renderCharacters();
-};
-
-// CAPITULOS NO MODAL
-function renderModalChapters() {
-    const caps = hqs[editingHqIdx].chapters || [];
-    document.getElementById('modal-cap-list').innerHTML = caps.map((c, i) => `
-        <div style="padding:10px; border:1px solid #eee; border-radius:10px; margin-bottom:5px; display:flex; justify-content:space-between;">
-            <span>${c.name}</span>
-            <button onclick="removeCap(${i})" style="border:none; color:red; background:none; cursor:pointer;">Excluir</button>
-        </div>`).join('');
-}
 
 window.addChapterFromModal = async () => {
     const name = document.getElementById('modal-cap-name').value;
-    const urls = document.getElementById('modal-cap-urls').value.split('\n').filter(u => u.trim());
-    if(!name || urls.length === 0) return alert("Preencha os campos!");
-    hqs[editingHqIdx].chapters.push({name, pages: urls, comments: []});
+    const files = document.getElementById('modal-cap-files').files;
+    if(!name || files.length === 0) return alert("Capítulo sem nome ou páginas!");
+    
+    const pages = [];
+    for(let f of files) { pages.push(await toBase64(f)); }
+    
+    hqs[editingHqIdx].chapters.push({name, pages});
     await setDoc(doc(db, "vyracomics", "main"), { hqs });
     renderModalChapters();
-    document.getElementById('modal-cap-name').value = "";
-    document.getElementById('modal-cap-urls').value = "";
 };
 
+function renderModalChapters() {
+    const caps = hqs[editingHqIdx].chapters || [];
+    document.getElementById('modal-cap-list').innerHTML = caps.map((c, i) => `
+        <div style="padding:10px; border:1px solid #eee; margin-bottom:5px; display:flex; justify-content:space-between;">
+            <span>${c.name} (${c.pages.length} pgs)</span>
+            <button onclick="removeCap(${i})" style="color:red; background:none; border:none;">X</button>
+        </div>`).join('');
+}
+
 window.removeCap = async (i) => {
-    if(confirm("Excluir este capítulo?")) {
-        hqs[editingHqIdx].chapters.splice(i, 1);
-        await setDoc(doc(db, "vyracomics", "main"), { hqs });
-        renderModalChapters();
-    }
+    hqs[editingHqIdx].chapters.splice(i, 1);
+    await setDoc(doc(db, "vyracomics", "main"), { hqs });
+    renderModalChapters();
 };
 
 window.deleteHq = async () => {
-    if(confirm("DELETAR HQ PARA SEMPRE?")) {
+    if(confirm("Deletar HQ?")) {
         hqs.splice(editingHqIdx, 1);
         await setDoc(doc(db, "vyracomics", "main"), { hqs });
         closeEditModal();
     }
 };
 
-// ACOES ORIGINAIS
-window.createWork = async () => {
-    const name = document.getElementById('st-name').value;
-    const cover = document.getElementById('st-cover-url').value;
-    if(!name || !cover) return alert("Preencha os campos!");
-    hqs.push({ name, cover, synopsis: "", authorHandle: user.user, chapters: [], characters: [] });
-    await setDoc(doc(db, "vyracomics", "main"), { hqs });
-    alert("Criada!");
-    document.getElementById('st-name').value = "";
-    document.getElementById('st-cover-url').value = "";
-};
-
-window.uploadChapter = async () => {
-    const i = document.getElementById('st-select').value;
-    const name = document.getElementById('cap-name').value;
-    const pages = document.getElementById('cap-pages-urls').value.split('\n').filter(p => p.trim());
-    hqs[i].chapters.push({ name, pages, comments: [] });
-    await setDoc(doc(db, "vyracomics", "main"), { hqs });
-    alert("Capítulo Salvo!");
-    navTo('estudio');
-};
-
+// Home e Visualização
 function renderHome() {
     const list = document.getElementById('home-list');
     if(list) list.innerHTML = hqs.map((h, i) => `
         <div class="hq-card" onclick="renderObraView(${i})">
             <img src="${h.cover}">
             <p><b>${h.name}</b></p>
-            <small>${h.authorHandle}</small>
         </div>`).join('');
 }
 
@@ -355,22 +297,25 @@ window.renderObraView = (id) => {
     const h = hqs[id];
     document.getElementById('obra-content').innerHTML = `
         <img src="${h.cover}" style="width:100%; border-radius:20px;">
-        <h2 style="margin-top:15px;">${h.name}</h2>
-        <p style="color:var(--primary); font-weight:bold;">${h.authorHandle}</p>
-        <p style="margin-top:10px; color:#666;">${h.synopsis || 'Sem sinopse.'}</p>
-        <h3 style="margin-top:20px;">Capítulos</h3>
-        ${h.chapters.map(c => `<div class="cap-item">${c.name}</div>`).join('') || 'Em breve'}
+        <h2>${h.name}</h2>
+        <p>${h.synopsis || 'Sem sinopse.'}</p>
+        <div style="margin-top:20px;">
+            ${h.chapters.map(c => `<div class="cat-item" style="margin-bottom:5px; padding:15px;">${c.name}</div>`).join('')}
+        </div>
     `;
     navTo('obra-view');
 };
 
-window.saveProfile = () => {
+// Perfil
+window.saveProfile = async () => {
     user.name = document.getElementById('edit-name').value;
     user.user = document.getElementById('edit-user').value;
-    user.avatar = document.getElementById('edit-avatar-url').value;
-    user.banner = document.getElementById('edit-banner-url').value;
+    const av = document.getElementById('edit-avatar-file').files[0];
+    const bn = document.getElementById('edit-banner-file').files[0];
+    if(av) user.avatar = await toBase64(av);
+    if(bn) user.banner = await toBase64(bn);
     localDb.transaction("data", "readwrite").objectStore("data").put({id:"user", ...user});
-    alert("Perfil Salvo!");
+    alert("Perfil Atualizado!");
     navTo('perfil');
 };
 
@@ -385,19 +330,13 @@ function renderProfile() {
     document.getElementById('view-user').innerText = user.user;
     document.getElementById('view-avatar').style.backgroundImage = `url(${user.avatar})`;
     document.getElementById('view-banner').style.backgroundImage = `url(${user.banner})`;
-    const myHqs = hqs.filter(h => h.authorHandle === user.user);
-    document.getElementById('perfil-list').innerHTML = myHqs.map(h => `
-        <div class="hq-card" onclick="renderObraView(${hqs.indexOf(h)})">
-            <img src="${h.cover}">
-            <p><b>${h.name}</b></p>
-        </div>`).join('');
 }
 
 window.saveSynopsis = async () => {
     const i = document.getElementById('st-select').value;
     hqs[i].synopsis = document.getElementById('st-synopsis').value;
     await setDoc(doc(db, "vyracomics", "main"), { hqs });
-    alert("Sinopse Salva!");
+    alert("Salvo!");
     navTo('estudio');
 };
 
