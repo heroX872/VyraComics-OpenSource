@@ -49,49 +49,51 @@ function btnLoading(id, loading, label) {
 // ── Data Layer (Supabase) ──────────────────────────────────────
 
 async function saveHqs() {
-  // Nota: No Supabase, salvamos a linha específica em vez de um array global
   const hq = hqs[editingHqIdx];
   if (!hq) return;
 
+  // Garante que estamos enviando apenas o que o banco precisa
   const { error } = await supabase
     .from('hqs')
     .upsert({ 
-      id: hq.id, // Se tiver ID, atualiza. Se não, o Supabase ignora ou cria.
+      id: hq.id, 
       name: hq.name,
       genre: hq.genre,
       cover: hq.cover,
       synopsis: hq.synopsis,
-      authorHandle: hq.authorHandle,
-      authorId: hq.authorId,
+      authorHandle: user.user, // Sempre usa o handle atualizado do user
+      authorId: USER_ID,
       chapters: hq.chapters 
     });
 
   if (error) {
     console.error(error);
-    toast("Erro ao salvar dados.", "error");
+    toast("Erro ao salvar HQ.", "error");
+  } else {
+    refreshUI();
   }
 }
 
 // ── Inicialização e Listener Realtime ──────────────────────────
 async function init() {
   await loadUser();
+  await fetchHqs();
   
-  // Busca inicial das HQs
+  // Listener Realtime
+  supabase
+    .channel('public:hqs')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'hqs' }, () => {
+      fetchHqs();
+    })
+    .subscribe();
+}
+
+async function fetchHqs() {
   const { data, error } = await supabase.from('hqs').select('*');
   if (!error) {
     hqs = data || [];
     refreshUI();
   }
-
-  // Listener Realtime (Substituto do onSnapshot)
-  supabase
-    .channel('public:hqs')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'hqs' }, async () => {
-      const { data } = await supabase.from('hqs').select('*');
-      hqs = data || [];
-      refreshUI();
-    })
-    .subscribe();
 }
 
 function refreshUI() {
@@ -144,7 +146,7 @@ function buildCards(list) {
     const genre = h.genre ? `<div class="genre-badge">${GENRE_LABELS[h.genre] || h.genre}</div>` : '';
     return `
       <div class="hq-card" onclick="renderObraView(${idx})">
-        <img class="hq-card-img" src="${h.cover}" alt="${h.name}" loading="lazy" decoding="async">
+        <img class="hq-card-img" src="${h.cover}" alt="${h.name}" loading="lazy">
         <div class="hq-card-body">
           <div class="hq-card-title">${h.name}</div>
           <div class="hq-card-sub">${h.authorHandle || '@autor'}</div>
@@ -178,19 +180,25 @@ function renderStudioList() {
   const mine = hqs.filter(h => h.authorId === USER_ID);
   
   list.innerHTML = mine.length
-    ? hqs.map((h, i) => h.authorId !== USER_ID ? '' : `
+    ? mine.map(h => {
+        const i = hqs.findIndex(item => item.id === h.id);
+        return `
         <div class="hq-card" onclick="openEditModal(${i})">
-          <img class="hq-card-img" src="${h.cover}" alt="${h.name}" loading="lazy" decoding="async">
+          <img class="hq-card-img" src="${h.cover}" alt="${h.name}">
           <div class="hq-card-body">
             <div class="hq-card-title">${h.name}</div>
             <div class="hq-card-sub">Toque para editar</div>
           </div>
-        </div>`).join('')
+        </div>`;
+      }).join('')
     : `<div class="empty-state"><div class="ei">✏️</div><p>Você ainda não tem obras.</p></div>`;
 
   const sel = document.getElementById('st-select');
-  if (sel) sel.innerHTML = hqs
-    .map((h, i) => h.authorHandle === user.user ? `<option value="${i}">${h.name}</option>` : '')
+  if (sel) sel.innerHTML = `<option value="">Selecione...</option>` + mine
+    .map(h => {
+       const i = hqs.findIndex(item => item.id === h.id);
+       return `<option value="${i}">${h.name}</option>`;
+    })
     .join('');
 }
 
@@ -213,17 +221,17 @@ window.createWork = async () => {
         chapters: [] 
     };
 
-    const { data, error } = await supabase.from('hqs').insert([newHq]).select();
-    
+    const { error } = await supabase.from('hqs').insert([newHq]);
     if(error) throw error;
 
     document.getElementById('st-name').value      = '';
     document.getElementById('st-genre').value     = '';
     document.getElementById('st-cover-file').value = '';
     toast('HQ criada com sucesso!', 'success');
+    await fetchHqs();
   } catch (err) {
     console.error(err);
-    toast('Erro ao criar HQ. Tente novamente.', 'error');
+    toast('Erro ao criar HQ.', 'error');
   } finally {
     btnLoading('btn-create', false, '+ Criar Obra');
   }
@@ -231,8 +239,9 @@ window.createWork = async () => {
 
 window.openEditModal = idx => {
   editingHqIdx = idx;
-  document.getElementById('edit-hq-name').value        = hqs[idx].name;
-  document.getElementById('edit-hq-title').textContent = hqs[idx].name;
+  const hq = hqs[idx];
+  document.getElementById('edit-hq-name').value        = hq.name;
+  document.getElementById('edit-hq-title').textContent = hq.name;
   renderModalChapters();
   document.getElementById('edit-hq-modal').classList.add('active');
 };
@@ -252,7 +261,7 @@ window.updateHqBasic = async () => {
     await saveHqs();
     toast('Alterações salvas!', 'success');
   } catch {
-    toast('Erro ao salvar. Tente novamente.', 'error');
+    toast('Erro ao salvar.', 'error');
   } finally {
     btnLoading('btn-update-hq', false, 'Salvar Alterações');
   }
@@ -261,12 +270,13 @@ window.updateHqBasic = async () => {
 window.addChapterFromModal = async () => {
   const name  = document.getElementById('modal-cap-name').value.trim();
   const files = document.getElementById('modal-cap-files').files;
-  if (!name || !files.length) { toast('Informe o nome e as páginas do capítulo.', 'error'); return; }
+  if (!name || !files.length) { toast('Informe o nome e as páginas.', 'error'); return; }
 
   btnLoading('btn-add-cap', true, '+ Adicionar Capítulo');
   try {
     const pages = [];
     for (const f of files) pages.push(await toBase64(f));
+    if (!hqs[editingHqIdx].chapters) hqs[editingHqIdx].chapters = [];
     hqs[editingHqIdx].chapters.push({ name, pages });
     await saveHqs();
     renderModalChapters();
@@ -281,7 +291,7 @@ window.addChapterFromModal = async () => {
 };
 
 function renderModalChapters() {
-  const caps = hqs[editingHqIdx].chapters || [];
+  const caps = hqs[editingHqIdx]?.chapters || [];
   document.getElementById('modal-cap-list').innerHTML = caps.length
     ? caps.map((c, i) => `
         <div class="cap-item">
@@ -301,13 +311,12 @@ window.removeCap = async i => {
 
 window.deleteHq = async () => {
   if (!confirm('Deletar esta HQ permanentemente?')) return;
-  const hqToDelete = hqs[editingHqIdx];
-  
-  const { error } = await supabase.from('hqs').delete().eq('id', hqToDelete.id);
-  
+  const id = hqs[editingHqIdx].id;
+  const { error } = await supabase.from('hqs').delete().eq('id', id);
   if (!error) {
     closeEditModal();
-    toast(`"${hqToDelete.name}" excluída.`, 'info');
+    toast(`HQ excluída.`, 'info');
+    await fetchHqs();
   }
 };
 
@@ -315,13 +324,14 @@ window.deleteHq = async () => {
 window.renderObraView = id => {
   currentObraIdx = id;
   const h    = hqs[id];
+  if (!h) return;
   const caps = h.chapters || [];
   const genre = h.genre
     ? `<div class="genre-badge" style="margin-bottom:12px;">${GENRE_LABELS[h.genre] || h.genre}</div>`
     : '';
 
   document.getElementById('obra-content').innerHTML = `
-    <img src="${h.cover}" class="obra-cover" alt="${h.name}" loading="eager" decoding="async">
+    <img src="${h.cover}" class="obra-cover" alt="${h.name}">
     ${genre}
     <h2 class="obra-title">${h.name}</h2>
     <p class="obra-synopsis">${h.synopsis || 'Sem sinopse ainda.'}</p>
@@ -376,7 +386,7 @@ function renderReaderPages() {
   document.getElementById('reader-next').disabled = readerCapIdx === total - 1;
 
   document.getElementById('reader-pages').innerHTML = cap.pages.map((src, i) =>
-    `<img src="${src}" alt="Página ${i + 1}" loading="lazy" decoding="async">`
+    `<img src="${src}" alt="Pág ${i + 1}" loading="lazy">`
   ).join('');
 }
 
@@ -386,16 +396,20 @@ function renderProfileList() {
   if (!list) return;
   const mine = hqs.filter(h => h.authorId === USER_ID);
   list.innerHTML = mine.length
-    ? hqs.map((h, i) => h.authorId !== USER_ID ? '' : `
+    ? mine.map(h => {
+        const i = hqs.findIndex(item => item.id === h.id);
+        return `
         <div class="hq-card" onclick="renderObraView(${i})">
-          <img class="hq-card-img" src="${h.cover}" alt="${h.name}" loading="lazy" decoding="async">
+          <img class="hq-card-img" src="${h.cover}" alt="${h.name}">
           <div class="hq-card-body">
             <div class="hq-card-title">${h.name}</div>
           </div>
-        </div>`).join('')
+        </div>`;
+      }).join('')
     : `<div class="empty-state"><div class="ei">🎨</div><p>Nenhuma obra publicada.</p></div>`;
 }
 
+// CORREÇÃO: Função saveProfile agora usa upsert corretamente com o ID do usuário
 window.saveProfile = async () => {
   const name   = document.getElementById('edit-name').value.trim();
   const handle = document.getElementById('edit-user').value.trim();
@@ -412,13 +426,18 @@ window.saveProfile = async () => {
 
     const { error } = await supabase
         .from('users')
-        .upsert({ id: USER_ID, ...user });
+        .upsert({ 
+          id: USER_ID, 
+          name: user.name, 
+          user: user.user, 
+          avatar: user.avatar, 
+          banner: user.banner 
+        });
 
     if(error) throw error;
 
     renderProfile();
-    renderStudioList();
-    renderProfileList();
+    refreshUI();
     toast('Perfil atualizado!', 'success');
     navTo('perfil');
   } catch (err) {
@@ -431,15 +450,17 @@ window.saveProfile = async () => {
 
 async function loadUser() {
   try {
-    const { data, error } = await supabase
+    const { data } = await supabase
         .from('users')
         .select('*')
         .eq('id', USER_ID)
         .single();
     
-    if (data) user = data;
+    if (data) {
+        user = data;
+        renderProfile();
+    }
   } catch (e) { }
-  renderProfile();
 }
 
 function renderProfile() {
@@ -459,48 +480,28 @@ window.saveSynopsis = async () => {
   
   await saveHqs();
   toast('Sinopse salva!', 'success');
-  navTo('estudio');
 };
 
 window.loadSynopsis = () => {
   const i = document.getElementById('st-select').value;
-  document.getElementById('st-synopsis').value = hqs[i]?.synopsis || '';
+  if(i !== "") document.getElementById('st-synopsis').value = hqs[i]?.synopsis || '';
 };
 
 // ── Reader swipe ───────────────────────────────────────────────
 (function () {
   const pages = document.getElementById('reader-pages');
   if(!pages) return;
-  const hintPrev = document.getElementById('swipe-hint-prev');
-  const hintNext = document.getElementById('swipe-hint-next');
   let startX = 0, startY = 0;
-
-  function hideHints() {
-    if(hintPrev) hintPrev.classList.remove('show');
-    if(hintNext) hintNext.classList.remove('show');
-  }
 
   pages.addEventListener('touchstart', e => {
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
   }, { passive: true });
 
-  pages.addEventListener('touchmove', e => {
-    const dx = e.touches[0].clientX - startX;
-    const dy = e.touches[0].clientY - startY;
-    if (Math.abs(dy) > Math.abs(dx) || Math.abs(dx) < 20) { hideHints(); return; }
-
-    const total = hqs[readerHqIdx]?.chapters?.length ?? 0;
-    if (dx > 20 && readerCapIdx > 0 && hintPrev) { hintPrev.classList.add('show'); if(hintNext) hintNext.classList.remove('show'); }
-    else if (dx < -20 && readerCapIdx < total - 1 && hintNext) { hintNext.classList.add('show'); if(hintPrev) hintPrev.classList.remove('show'); }
-    else { hideHints(); }
-  }, { passive: true });
-
   pages.addEventListener('touchend', e => {
-    hideHints();
     const dx = e.changedTouches[0].clientX - startX;
     const dy = e.changedTouches[0].clientY - startY;
-    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy)) return;
+    if (Math.abs(dx) < 80 || Math.abs(dx) < Math.abs(dy)) return;
     changeChapter(dx < 0 ? 1 : -1);
   }, { passive: true });
 })();
