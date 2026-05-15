@@ -5,20 +5,46 @@ const SUPABASE_URL = "https://zsjnoyairyepbsgdhoeu.supabase.co";
 const SUPABASE_KEY = "sb_publishable_wWbgwzExm50q-iGB5GHlrA_I_T5RX2H";
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ── ID anônimo do usuário ──────────────────────────────────────
-const USER_ID = (() => {
-  let uid = localStorage.getItem('vyra_uid');
-  if (!uid) { uid = crypto.randomUUID(); localStorage.setItem('vyra_uid', uid); }
-  return uid;
-})();
-
-// ── State ──────────────────────────────────────────────────────
+// ── State Global ───────────────────────────────────────────────
 let hqs = [], editingHqIdx;
 let user = { name: "Usuário", user: "@user", avatar: "", banner: "" };
+let USER_ID = null;
 
 let readerHqIdx    = 0;
 let readerCapIdx   = 0;
 let currentObraIdx = null;
+
+// ── Inicialização (Fluxo Corrigido) ───────────────────────────
+async function init() {
+  // 1. Checagem de segurança rápida
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  if (!session) {
+    window.location.href = "começar.html";
+    return;
+  }
+
+  // 2. Se logado, libera o ID e carrega os dados
+  USER_ID = session.user.id;
+  await loadUser();
+  await fetchHqs();
+  
+  // Listener Realtime
+  supabase
+    .channel('public:hqs')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'hqs' }, () => {
+      fetchHqs();
+    })
+    .subscribe();
+}
+
+// Ouvinte de saída (Logout)
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_OUT') window.location.href = "começar.html";
+});
+
+// RODAR O INIT
+init();
 
 // ── Utilities ──────────────────────────────────────────────────
 const toBase64 = file => new Promise((res, rej) => {
@@ -52,7 +78,6 @@ async function saveHqs() {
   const hq = hqs[editingHqIdx];
   if (!hq) return;
 
-  // Garante que estamos enviando apenas o que o banco precisa
   const { error } = await supabase
     .from('hqs')
     .upsert({ 
@@ -61,7 +86,7 @@ async function saveHqs() {
       genre: hq.genre,
       cover: hq.cover,
       synopsis: hq.synopsis,
-      authorHandle: user.user, // Sempre usa o handle atualizado do user
+      authorHandle: user.user, 
       authorId: USER_ID,
       chapters: hq.chapters 
     });
@@ -72,20 +97,6 @@ async function saveHqs() {
   } else {
     refreshUI();
   }
-}
-
-// ── Inicialização e Listener Realtime ──────────────────────────
-async function init() {
-  await loadUser();
-  await fetchHqs();
-  
-  // Listener Realtime
-  supabase
-    .channel('public:hqs')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'hqs' }, () => {
-      fetchHqs();
-    })
-    .subscribe();
 }
 
 async function fetchHqs() {
@@ -103,9 +114,7 @@ function refreshUI() {
   handleRoute();
 }
 
-init();
-
-// ── Navigation ─────────────────────────────────────────────────
+// ── Navigation (As abas funcionam por aqui) ───────────────────
 const NAV_MAP = { inicio: 0, categorias: 1, estudio: 2, perfil: 3 };
 
 window.navTo = screen => {
@@ -130,6 +139,8 @@ function fillEditPerfilForm() {
   document.getElementById('edit-user').value = user.user;
 }
 window.addEventListener('hashchange', handleRoute);
+// Chama uma vez para garantir que a aba inicial carregue
+handleRoute();
 
 // ── Home ───────────────────────────────────────────────────────
 const GENRE_LABELS = {
@@ -409,7 +420,6 @@ function renderProfileList() {
     : `<div class="empty-state"><div class="ei">🎨</div><p>Nenhuma obra publicada.</p></div>`;
 }
 
-// CORREÇÃO: Função saveProfile agora usa upsert corretamente com o ID do usuário
 window.saveProfile = async () => {
   const name   = document.getElementById('edit-name').value.trim();
   const handle = document.getElementById('edit-user').value.trim();
@@ -425,13 +435,11 @@ window.saveProfile = async () => {
     if (bn) user.banner = await toBase64(bn);
 
     const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .upsert({ 
           id: USER_ID, 
-          name: user.name, 
-          user: user.user, 
-          avatar: user.avatar, 
-          banner: user.banner 
+          username: user.user, 
+          avatar_url: user.avatar
         });
 
     if(error) throw error;
@@ -451,13 +459,14 @@ window.saveProfile = async () => {
 async function loadUser() {
   try {
     const { data } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*')
         .eq('id', USER_ID)
         .single();
     
     if (data) {
-        user = data;
+        user.user = data.username || "@user";
+        user.avatar = data.avatar_url || "";
         renderProfile();
     }
   } catch (e) { }
