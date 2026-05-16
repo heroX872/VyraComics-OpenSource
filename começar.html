@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>VyraComics | Bem-vindo</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
+
         :root {
             --bg: #0a0a0a;
             --surface: #141414;
@@ -21,224 +23,598 @@
             --muted: #666;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        
-        body { 
-            background-color: var(--bg); 
-            color: var(--text); 
-            overflow: hidden; 
-            height: 100vh;
-            background-image: radial-gradient(circle, rgba(124,58,237,0.1) 1px, transparent 1px);
-            background-size: 22px 22px;
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Inter',sans-serif;
         }
 
-        /* ── TELA INICIAL (ESTILO CLOUDFLARE) ── */
-        #landing-screen {
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            background: linear-gradient(165deg, #050505 30%, #1e0b3d 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        body{
+            background-color:var(--bg);
+            color:var(--text);
+            overflow:hidden;
+            height:100vh;
+
+            background-image:
+                radial-gradient(circle, rgba(124,58,237,0.1) 1px, transparent 1px);
+
+            background-size:22px 22px;
         }
 
-        .hero-content { text-align: center; max-width: 500px; animation: fadeIn 0.8s ease; }
-        .logo-main { height: 80px; margin-bottom: 24px; filter: drop-shadow(0 0 15px var(--purple-glow)); }
-        
-        h1 { font-family: 'Bangers', cursive; font-size: 4rem; letter-spacing: 2px; line-height: 0.9; margin-bottom: 20px; }
-        h1 span { color: var(--purple-soft); text-shadow: 0 0 20px var(--purple-glow); }
-        
-        .hero-p { color: var(--muted); margin-bottom: 40px; font-size: 1.1rem; }
+        /* LANDING */
 
-        .btn-start {
-            background: #fff; color: #000; border: none; padding: 20px 50px;
-            border-radius: 50px; font-weight: 900; font-size: 1.2rem;
-            cursor: pointer; width: 100%; transition: 0.3s;
-            box-shadow: 0 10px 30px rgba(124,58,237,0.2);
+        #landing-screen{
+            position:fixed;
+            inset:0;
+            z-index:100;
+
+            background:
+                linear-gradient(165deg,#050505 30%,#1e0b3d 100%);
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+
+            padding:20px;
         }
 
-        /* ── MODAL DE PASSOS ── */
-        #modal-onboarding {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.96);
-            backdrop-filter: blur(15px);
-            z-index: 200;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+        .hero-content{
+            text-align:center;
+            max-width:500px;
         }
 
-        .card {
-            background: var(--surface);
-            width: 100%; max-width: 420px;
-            padding: 40px 30px;
-            border-radius: 32px;
-            border: 1px solid var(--border);
-            text-align: center;
-            position: relative;
+        .logo-main{
+            height:80px;
+            margin-bottom:24px;
+            filter:drop-shadow(0 0 15px var(--purple-glow));
         }
 
-        .step { display: none; }
-        .step.active { display: block; animation: slideUp 0.4s ease forwards; }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .input-group { margin: 20px 0; text-align: left; }
-        input {
-            width: 100%; background: #000; border: 1.5px solid var(--border);
-            padding: 18px; border-radius: 16px; color: #fff;
-            font-size: 1rem; outline: none; transition: 0.3s;
+        h1{
+            font-family:'Bangers',cursive;
+            font-size:4rem;
+            letter-spacing:2px;
+            line-height:0.9;
+            margin-bottom:20px;
         }
-        input:focus { border-color: var(--purple); box-shadow: 0 0 12px var(--purple-dim); }
 
-        .btn-next {
-            background: var(--purple); color: #fff; border: none;
-            width: 100%; padding: 18px; border-radius: 16px;
-            font-weight: 800; font-size: 1.1rem; cursor: pointer;
+        h1 span{
+            color:var(--purple-soft);
+            text-shadow:0 0 20px var(--purple-glow);
+        }
+
+        .hero-p{
+            color:var(--muted);
+            margin-bottom:40px;
+            font-size:1.1rem;
+        }
+
+        .btn-start{
+            background:#fff;
+            color:#000;
+            border:none;
+
+            padding:20px 50px;
+
+            border-radius:50px;
+
+            font-weight:900;
+            font-size:1.2rem;
+
+            cursor:pointer;
+            width:100%;
+
+            transition:0.3s;
+        }
+
+        /* MODAL */
+
+        #modal-onboarding{
+            position:fixed;
+            inset:0;
+
+            background:rgba(0,0,0,0.96);
+            backdrop-filter:blur(15px);
+
+            z-index:200;
+
+            display:none;
+            align-items:center;
+            justify-content:center;
+
+            padding:20px;
+        }
+
+        .card{
+            background:var(--surface);
+
+            width:100%;
+            max-width:420px;
+
+            padding:40px 30px;
+
+            border-radius:32px;
+            border:1px solid var(--border);
+
+            text-align:center;
+        }
+
+        .step{
+            display:none;
+        }
+
+        .step.active{
+            display:block;
+        }
+
+        .input-group{
+            margin:20px 0;
+            text-align:left;
+        }
+
+        input{
+            width:100%;
+
+            background:#000;
+            border:1.5px solid var(--border);
+
+            padding:18px;
+
+            border-radius:16px;
+
+            color:#fff;
+            font-size:1rem;
+
+            outline:none;
+        }
+
+        input:focus{
+            border-color:var(--purple);
+        }
+
+        .btn-next{
+            background:var(--purple);
+            color:#fff;
+
+            border:none;
+
+            width:100%;
+            padding:18px;
+
+            border-radius:16px;
+
+            font-weight:800;
+            font-size:1.1rem;
+
+            cursor:pointer;
         }
 
         /* AVATAR */
-        .avatar-circle {
-            width: 140px; height: 140px; border: 2px dashed var(--purple);
-            border-radius: 50%; margin: 20px auto;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; overflow: hidden; position: relative;
+
+        .avatar-circle{
+            width:140px;
+            height:140px;
+
+            border:2px dashed var(--purple);
+
+            border-radius:50%;
+
+            margin:20px auto;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+
+            cursor:pointer;
+
+            overflow:hidden;
+            position:relative;
         }
-        .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
-        .avatar-circle span { font-size: 2rem; color: var(--purple); }
 
-        .progress-dots { display: flex; gap: 8px; justify-content: center; margin-bottom: 30px; }
-        .dot { width: 8px; height: 8px; background: var(--border); border-radius: 50%; }
-        .dot.active { background: var(--purple); width: 20px; border-radius: 4px; transition: 0.3s; }
+        .avatar-circle img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .avatar-circle span{
+            font-size:2rem;
+            color:var(--purple);
+        }
+
+        #avatar-img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            display:none;
+        }
+
+        /* DOTS */
+
+        .progress-dots{
+            display:flex;
+            gap:8px;
+            justify-content:center;
+            margin-bottom:30px;
+        }
+
+        .dot{
+            width:8px;
+            height:8px;
+
+            background:var(--border);
+
+            border-radius:50%;
+        }
+
+        .dot.active{
+            background:var(--purple);
+            width:20px;
+            border-radius:4px;
+        }
+
     </style>
 </head>
 <body>
 
     <section id="landing-screen">
+
         <div class="hero-content">
-            <img src="images/logovyracomics.png" class="logo-main" alt="Vyra">
-            <h1>O SEU NOVO<br><span>UNIVERSO.</span></h1>
-            <p class="hero-p">Entre para a maior comunidade indie do Brasil.</p>
-            <button class="btn-start" onclick="openOnboarding()">COMEÇAR JÁ</button>
+
+            <img
+                src="images/logovyracomics.png"
+                class="logo-main"
+                alt="Vyra"
+            >
+
+            <h1>
+                O SEU NOVO<br>
+                <span>UNIVERSO.</span>
+            </h1>
+
+            <p class="hero-p">
+                Entre para a maior comunidade indie do Brasil.
+            </p>
+
+            <button
+                class="btn-start"
+                onclick="openOnboarding()"
+            >
+                COMEÇAR JÁ
+            </button>
+
         </div>
+
     </section>
 
-    <div id="modal-onboarding" class="modal-onboarding">
+    <!-- MODAL -->
+
+    <div id="modal-onboarding">
+
         <div class="card">
+
             <div class="progress-dots">
                 <div class="dot active" id="d1"></div>
                 <div class="dot" id="d2"></div>
                 <div class="dot" id="d3"></div>
             </div>
-            
+
+            <!-- STEP 1 -->
+
             <div class="step active" id="step-1">
+
                 <h2>Como quer ser chamado?</h2>
+
                 <div class="input-group">
-                    <input type="text" id="reg-name" placeholder="Nick ou Nome" autocomplete="off">
+
+                    <input
+                        type="text"
+                        id="reg-name"
+                        placeholder="Nick ou Nome"
+                        autocomplete="off"
+                    >
+
                 </div>
-                <button class="btn-next" onclick="goTo(2)">Continuar</button>
+
+                <button
+                    class="btn-next"
+                    onclick="goTo(2)"
+                >
+                    Continuar
+                </button>
+
             </div>
+
+            <!-- STEP 2 -->
 
             <div class="step" id="step-2">
+
                 <h2>Dados de Acesso</h2>
+
                 <div class="input-group">
-                    <input type="email" id="reg-email" placeholder="E-mail">
-                    <input type="password" id="reg-pass" placeholder="Senha" style="margin-top: 10px;">
+
+                    <input
+                        type="email"
+                        id="reg-email"
+                        placeholder="E-mail"
+                    >
+
+                    <input
+                        type="password"
+                        id="reg-pass"
+                        placeholder="Senha"
+                        style="margin-top:10px;"
+                    >
+
                 </div>
-                <button class="btn-next" onclick="goTo(3)">Quase lá...</button>
+
+                <button
+                    class="btn-next"
+                    onclick="goTo(3)"
+                >
+                    Quase lá...
+                </button>
+
             </div>
 
+            <!-- STEP 3 -->
+
             <div class="step" id="step-3">
+
                 <h2>Identidade Visual</h2>
-                <label class="avatar-circle" id="avatar-preview">
-                    <span>+</span>
-                    <input type="file" id="avatar-input" hidden accept="image/*" onchange="previewImg(this)">
+
+                <label
+                    class="avatar-circle"
+                    id="avatar-preview"
+                >
+
+                    <span id="avatar-plus">+</span>
+
+                    <img id="avatar-img">
+
+                    <input
+                        type="file"
+                        id="avatar-input"
+                        hidden
+                        accept="image/*"
+                        onchange="previewImg(this)"
+                    >
+
                 </label>
-                <button class="btn-next" id="btn-finish" onclick="handleSignUp()">Finalizar e Entrar</button>
+
+                <button
+                    class="btn-next"
+                    id="btn-finish"
+                    onclick="handleSignUp()"
+                >
+                    Finalizar e Entrar
+                </button>
+
             </div>
+
         </div>
+
     </div>
 
     <script type="module">
-        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-        // CONFIG (Conectado ao seu projeto)
-        const URL = "https://zsjnoyairyepbsgdhoeu.supabase.co";
-        const KEY = "sb_publishable_wWbgwzExm50q-iGB5GHlrA_I_T5RX2H";
+        import { createClient }
+        from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+        // SUPABASE
+
+        const URL =
+            "https://ihiuygpxoxttwmbwbpns.supabase.co";
+
+        const KEY =
+            "sb_publishable_Te0kRJCi7DbW21iEj9w6QA_iO9av2fR";
+
         const supabase = createClient(URL, KEY);
 
+        // OPEN MODAL
+
         window.openOnboarding = () => {
-            document.getElementById('modal-onboarding').style.display = 'flex';
-        }
+
+            document.getElementById(
+                'modal-onboarding'
+            ).style.display = 'flex';
+
+        };
+
+        // CHANGE STEP
 
         window.goTo = (n) => {
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
-            document.getElementById('step-' + n).classList.add('active');
-            document.getElementById('d' + n).classList.add('active');
-        }
+
+            document
+                .querySelectorAll('.step')
+                .forEach(s => s.classList.remove('active'));
+
+            document
+                .querySelectorAll('.dot')
+                .forEach(d => d.classList.remove('active'));
+
+            document
+                .getElementById('step-' + n)
+                .classList.add('active');
+
+            document
+                .getElementById('d' + n)
+                .classList.add('active');
+        };
+
+        // PREVIEW IMAGE
 
         window.previewImg = (input) => {
-            if (input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = e => document.getElementById('avatar-preview').innerHTML = `<img src="${e.target.result}">`;
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
+
+            const file = input.files[0];
+
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+
+                document.getElementById(
+                    'avatar-plus'
+                ).style.display = 'none';
+
+                const img =
+                    document.getElementById(
+                        'avatar-img'
+                    );
+
+                img.src = e.target.result;
+                img.style.display = 'block';
+
+            };
+
+            reader.readAsDataURL(file);
+        };
+
+        // SIGNUP
 
         window.handleSignUp = async () => {
-            const btn = document.getElementById('btn-finish');
+
+            const btn =
+                document.getElementById('btn-finish');
+
             btn.innerText = "Preparando tudo...";
             btn.disabled = true;
 
-            const name = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
-            const pass = document.getElementById('reg-pass').value;
-            const file = document.getElementById('avatar-input').files[0];
-
             try {
-                // 1. AUTH SIGNUP (RÁPIDO)
-                const { data, error } = await supabase.auth.signUp({ 
-                    email, 
+
+                const name =
+                    document.getElementById('reg-name')
+                    .value
+                    .trim();
+
+                const email =
+                    document.getElementById('reg-email')
+                    .value
+                    .trim();
+
+                const pass =
+                    document.getElementById('reg-pass')
+                    .value;
+
+                const avatarInput =
+                    document.getElementById(
+                        'avatar-input'
+                    );
+
+                const file =
+                    avatarInput.files[0];
+
+                // VALIDATION
+
+                if (!name || !email || !pass) {
+
+                    throw new Error(
+                        "Preencha todos os campos."
+                    );
+
+                }
+
+                // AUTH
+
+                const {
+                    data,
+                    error
+                } = await supabase.auth.signUp({
+
+                    email,
                     password: pass,
-                    options: { data: { display_name: name } }
+
+                    options: {
+                        data: {
+                            display_name: name
+                        }
+                    }
+
                 });
 
                 if (error) throw error;
+
                 const user = data.user;
 
-                if (user) {
-                    // REDIRECIONAMENTO INSTANTÂNEO
-                    // O usuário vai pro index enquanto o banco processa o resto
-                    window.location.href = "index.html";
+                if (!user) {
 
-                    // 2. BACKGROUND TASKS (Não travam a tela)
-                    // Insere perfil
-                    supabase.from('profiles').insert([{ id: user.id, username: name }]).then();
+                    throw new Error(
+                        "Usuário não criado."
+                    );
 
-                    // Sobe imagem se houver
-                    if (file) {
-                        const fileName = `${user.id}-${Date.now()}`;
-                        supabase.storage.from('avatars').upload(fileName, file).then(({data: upData}) => {
-                            if(upData) {
-                                supabase.from('profiles').update({ avatar_url: upData.path }).eq('id', user.id).then();
-                            }
-                        });
-                    }
                 }
-            } catch (err) {
-                alert("Erro ao entrar: " + err.message);
-                btn.innerText = "Finalizar e Entrar";
+
+                let avatarPath = null;
+
+                // UPLOAD AVATAR
+
+                if (file) {
+
+                    const ext =
+                        file.name.split('.').pop();
+
+                    const fileName =
+                        `${user.id}-${Date.now()}.${ext}`;
+
+                    const {
+                        data: uploadData,
+                        error: uploadError
+                    } = await supabase.storage
+                        .from('avatars')
+                        .upload(fileName, file);
+
+                    if (uploadError)
+                        throw uploadError;
+
+                    avatarPath = uploadData.path;
+                }
+
+                // INSERT PROFILE
+
+                const {
+                    error: profileError
+                } = await supabase
+                    .from('profiles')
+                    .insert([
+                        {
+                            id: user.id,
+                            username: name,
+                            avatar_url: avatarPath
+                        }
+                    ]);
+
+                if (profileError)
+                    throw profileError;
+
+                // SUCCESS
+
+                btn.innerText = "Entrando...";
+
+                setTimeout(() => {
+
+                    window.location.href =
+                        "index.html";
+
+                }, 700);
+
+            }
+            catch(err){
+
+                console.error(err);
+
+                alert(
+                    "Erro: " + err.message
+                );
+
+                btn.innerText =
+                    "Finalizar e Entrar";
+
                 btn.disabled = false;
             }
-        }
+        };
+
     </script>
+
 </body>
 </html>
