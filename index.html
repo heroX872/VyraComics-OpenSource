@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -32,56 +31,41 @@
 
   <div class="search-wrap">
     <span class="search-icon">🔍</span>
-
     <input
       type="search"
       id="search-input"
       placeholder="Buscar HQs..."
       oninput="filterHome(this.value)"
     >
-
-    <button class="search-clear" onclick="clearSearch()">✕</button>
   </div>
 
-  <div class="section-title">
-    🔥 Bombando
-    <span class="tag">HOT</span>
-  </div>
-
+  <div class="section-title">Novidades Quentes</div>
   <div id="home-list" class="hq-grid"></div>
 </div>
 
 <div id="categorias" class="screen">
-  <div class="section-title">📋 Categorias</div>
-
-  <div class="cat-grid">
-    <div class="cat-item"><span>⚔️ Ação</span></div>
-    <div class="cat-item"><span>🌎 Aventura</span></div>
-    <div class="cat-item"><span>😂 Comédia</span></div>
-    <div class="cat-item"><span>🎭 Drama</span></div>
-  </div>
+  <div class="section-title">Categorias</div>
+  <p style="color:var(--muted)">Explore por gêneros em breve...</p>
 </div>
 
 <div id="estudio" class="screen">
-  <div class="section-title">🛠️ Estúdio</div>
+  <div class="section-title">Estúdio do Criador</div>
 
   <div class="box-studio">
-    <div class="box-title">🚀 Nova Obra</div>
+    <div class="box-title">Publicar Nova HQ</div>
 
-    <input type="text" id="st-name" placeholder="Título da HQ">
+    <label class="input-label">Título da Obra:</label>
+    <input type="text" id="st-name" placeholder="Ex: O Despertar do Jonay">
 
-    <label class="input-label">Gênero:</label>
-
+    <label class="input-label">Gênero Principal:</label>
     <select id="st-genre">
-      <option value="">Selecione</option>
-      <option value="acao">⚔️ Ação</option>
+      <option value="acao">⚔️ Ação / Shonen</option>
       <option value="aventura">🌎 Aventura</option>
       <option value="comedia">😂 Comédia</option>
       <option value="drama">🎭 Drama</option>
     </select>
 
     <label class="input-label">Capa:</label>
-
     <input type="file" id="st-cover-file" accept="image/*">
 
     <button
@@ -94,28 +78,47 @@
   </div>
 
   <div class="section-title">Suas HQs</div>
-
   <div id="studio-list" class="hq-grid"></div>
 </div>
 
 <div id="perfil" class="screen">
-
   <div class="p-banner" id="view-banner"></div>
-
   <div class="p-avatar" id="view-avatar"></div>
 
   <div style="text-align:center;margin-bottom:20px;">
     <div class="profile-name" id="view-name">Carregando...</div>
     <div class="profile-handle" id="view-user">@user</div>
+    <button class="btn-edit-trigger" onclick="openEditProfileModal()">✏️ Editar Perfil</button>
   </div>
 
   <div class="section-title">Minhas Obras</div>
-
   <div id="perfil-list" class="hq-grid"></div>
 </div>
 
-<nav class="bottom-nav">
+<div id="edit-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="box-title">Editar Perfil</div>
+    
+    <label class="input-label">Nome de Exibição:</label>
+    <input type="text" id="edit-name">
+    
+    <label class="input-label">Arroba (@):</label>
+    <input type="text" id="edit-username">
+    
+    <label class="input-label">Foto de Avatar:</label>
+    <input type="file" id="edit-avatar-file" accept="image/*">
+    
+    <label class="input-label">Imagem de Banner:</label>
+    <input type="file" id="edit-banner-file" accept="image/*">
+    
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button class="btn-primary" style="background:#444;" onclick="closeEditProfileModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveProfile()">Salvar</button>
+    </div>
+  </div>
+</div>
 
+<nav class="bottom-nav">
   <div class="nav-item active" onclick="navTo('inicio')">
     <span class="nav-icon">🏠</span>
     <span>Início</span>
@@ -123,11 +126,11 @@
 
   <div class="nav-item" onclick="navTo('categorias')">
     <span class="nav-icon">📋</span>
-    <span>Explorar</span>
+    <span>Categorias</span>
   </div>
 
   <div class="nav-item" onclick="navTo('estudio')">
-    <span class="nav-icon">🛠️</span>
+    <span class="nav-icon">🎨</span>
     <span>Estúdio</span>
   </div>
 
@@ -135,7 +138,6 @@
     <span class="nav-icon">👤</span>
     <span>Perfil</span>
   </div>
-
 </nav>
 
 <script type="module" src="app.js"></script>

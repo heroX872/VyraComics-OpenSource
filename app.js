@@ -2,7 +2,7 @@
 
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-// IMPORTANTE: Credenciais do seu projeto
+// Credenciais sincronizadas com o seu começar.html
 const SUPABASE_URL = "https://ihiuygpxoxttwmbwbpns.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Te0kRJCi7DbW21iEj9w6QA_iO9av2fR";
 
@@ -67,7 +67,7 @@ supabase.auth.onAuthStateChange((event) => {
 });
 
 // =========================================================================
-// CORREÇÃO DOS BOTÕES: Expondo as funções para o escopo global (window)
+// EXPOSIÇÃO GLOBAL DE FUNÇÕES (Garante o funcionamento de todos os botões)
 // =========================================================================
 
 window.navTo = function(screen) {
@@ -91,13 +91,17 @@ window.clearSearch = function() {
   renderHome(hqs);
 };
 
+window.openHq = function(hqId) {
+  alert("Abrindo visualização da HQ ID: " + hqId);
+};
+
 window.createWork = async function() {
   const name = document.getElementById("st-name").value.trim();
   const genre = document.getElementById("st-genre").value;
   const file = document.getElementById("st-cover-file").files[0];
 
   if (!name || !file) {
-    alert("Preencha os dados.");
+    alert("Preencha os dados da obra.");
     return;
   }
 
@@ -120,7 +124,66 @@ window.createWork = async function() {
     return;
   }
 
+  document.getElementById("st-name").value = "";
+  document.getElementById("st-cover-file").value = "";
   fetchHqs();
+};
+
+// Funções do Modal de Edição de Perfil
+window.openEditProfileModal = function() {
+  document.getElementById("edit-name").value = user.name;
+  document.getElementById("edit-username").value = user.user.replace("@", "");
+  document.getElementById("edit-modal").classList.add("active");
+};
+
+window.closeEditProfileModal = function() {
+  document.getElementById("edit-modal").classList.remove("active");
+};
+
+window.saveProfile = async function() {
+  const newName = document.getElementById("edit-name").value.trim();
+  const newUsername = document.getElementById("edit-username").value.trim();
+  const avatarFile = document.getElementById("edit-avatar-file").files[0];
+  const bannerFile = document.getElementById("edit-banner-file").files[0];
+
+  if (!newName || !newUsername) {
+    alert("Nome e Arroba não podem ficar vazios.");
+    return;
+  }
+
+  let finalAvatar = user.avatar;
+  let finalBanner = user.banner;
+
+  if (avatarFile) {
+    finalAvatar = await toBase64(avatarFile);
+  }
+  if (bannerFile) {
+    finalBanner = await toBase64(bannerFile);
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      username: "@" + newUsername,
+      avatar_url: finalAvatar,
+      banner_url: finalBanner,
+      display_name: newName
+    })
+    .eq("id", USER_ID);
+
+  if (error) {
+    console.error(error);
+    alert("Erro ao salvar perfil.");
+    return;
+  }
+
+  user.name = newName;
+  user.user = "@" + newUsername;
+  user.avatar = finalAvatar;
+  user.banner = finalBanner;
+
+  renderProfile();
+  window.closeEditProfileModal();
 };
 
 // =========================================================================
@@ -166,7 +229,7 @@ function renderHome(list) {
   }
 
   el.innerHTML = list.map(h => `
-    <div class="hq-card">
+    <div class="hq-card" onclick="openHq('${h.id}')">
       <img class="hq-card-img" src="${h.cover}">
       <div class="hq-card-body">
         <div class="hq-card-title">${h.name}</div>
@@ -183,7 +246,7 @@ function renderStudio() {
   const mine = hqs.filter(h => h.authorId === USER_ID);
 
   list.innerHTML = mine.map(h => `
-    <div class="hq-card">
+    <div class="hq-card" onclick="openHq('${h.id}')">
       <img class="hq-card-img" src="${h.cover}">
       <div class="hq-card-body">
         <div class="hq-card-title">${h.name}</div>
@@ -200,7 +263,7 @@ function renderProfileList() {
   const mine = hqs.filter(h => h.authorId === USER_ID);
 
   list.innerHTML = mine.map(h => `
-    <div class="hq-card">
+    <div class="hq-card" onclick="openHq('${h.id}')">
       <img class="hq-card-img" src="${h.cover}">
       <div class="hq-card-body">
         <div class="hq-card-title">${h.name}</div>
@@ -218,8 +281,10 @@ async function loadUser() {
 
   if (!data) return;
 
+  user.name = data.display_name || "Usuário";
   user.user = data.username || "@user";
   user.avatar = data.avatar_url || "";
+  user.banner = data.banner_url || "";
   renderProfile();
 }
 
@@ -227,16 +292,31 @@ function renderProfile() {
   const viewName = document.getElementById("view-name");
   const viewUser = document.getElementById("view-user");
   const viewAvatar = document.getElementById("view-avatar");
+  const viewBanner = document.getElementById("view-banner");
 
   if (viewName) viewName.textContent = user.name;
   if (viewUser) viewUser.textContent = user.user;
 
-  if (user.avatar && viewAvatar) {
-    const finalUrl = user.avatar.startsWith("data:") 
-      ? user.avatar 
-      : supabase.storage.from("avatars").getPublicUrl(user.avatar).data.publicUrl;
+  if (viewAvatar) {
+    if (user.avatar) {
+      const finalAvatarUrl = user.avatar.startsWith("data:") 
+        ? user.avatar 
+        : supabase.storage.from("avatars").getPublicUrl(user.avatar).data.publicUrl;
+      viewAvatar.style.backgroundImage = `url('${finalAvatarUrl}')`;
+    } else {
+      viewAvatar.style.backgroundImage = "none";
+    }
+  }
 
-    viewAvatar.style.backgroundImage = `url('${finalUrl}')`;
+  if (viewBanner) {
+    if (user.banner) {
+      const finalBannerUrl = user.banner.startsWith("data:") 
+        ? user.banner 
+        : supabase.storage.from("banners").getPublicUrl(user.banner).data.publicUrl;
+      viewBanner.style.backgroundImage = `url('${finalBannerUrl}')`;
+    } else {
+      viewBanner.style.backgroundImage = "none";
+    }
   }
 }
 
@@ -249,6 +329,6 @@ function toBase64(file) {
   });
 }
 
-// Inicializa o roteamento visual da tela e o processo de autenticação
+// Inicializações básicas de UI e dados
 handleRoute();
 init();
