@@ -105,14 +105,13 @@ window.createWork = async function() {
     return;
   }
 
-  const cover = await toBase64(file);
+  const id = crypto.randomUUID();
+  const cover = await uploadCover(file, id);
 
   const { error } = await supabase
     .from("hqs")
     .insert([{
-      name,
-      genre,
-      cover,
+      id, name, genre, cover,
       synopsis: "",
       authorHandle: user.user,
       authorId: USER_ID,
@@ -155,10 +154,10 @@ window.saveProfile = async function() {
   let finalBanner = user.banner;
 
   if (avatarFile) {
-    finalAvatar = await toBase64(avatarFile);
+    finalAvatar = await uploadProfileImage(avatarFile, 'avatar');
   }
   if (bannerFile) {
-    finalBanner = await toBase64(bannerFile);
+    finalBanner = await uploadProfileImage(bannerFile, 'banner');
   }
 
   const { error } = await supabase
@@ -298,25 +297,11 @@ function renderProfile() {
   if (viewUser) viewUser.textContent = user.user;
 
   if (viewAvatar) {
-    if (user.avatar) {
-      const finalAvatarUrl = user.avatar.startsWith("data:") 
-        ? user.avatar 
-        : supabase.storage.from("avatars").getPublicUrl(user.avatar).data.publicUrl;
-      viewAvatar.style.backgroundImage = `url('${finalAvatarUrl}')`;
-    } else {
-      viewAvatar.style.backgroundImage = "none";
-    }
+    viewAvatar.style.backgroundImage = user.avatar ? `url('${user.avatar}')` : "none";
   }
 
   if (viewBanner) {
-    if (user.banner) {
-      const finalBannerUrl = user.banner.startsWith("data:") 
-        ? user.banner 
-        : supabase.storage.from("banners").getPublicUrl(user.banner).data.publicUrl;
-      viewBanner.style.backgroundImage = `url('${finalBannerUrl}')`;
-    } else {
-      viewBanner.style.backgroundImage = "none";
-    }
+    viewBanner.style.backgroundImage = user.banner ? `url('${user.banner}')` : "none";
   }
 }
 
@@ -327,6 +312,30 @@ function toBase64(file) {
     reader.onload = () => resolve(reader.result);
     reader.onerror = reject;
   });
+}
+
+async function uploadCover(file, hqId) {
+  const ext  = file.name.split('.').pop();
+  const path = `${hqId}/cover.${ext}`;
+  const { error } = await supabase.storage.from('hq-covers').upload(path, file, { upsert: true });
+  if (error) throw new Error(error.message);
+  return supabase.storage.from('hq-covers').getPublicUrl(path).data.publicUrl;
+}
+
+async function uploadPage(file, hqId, chapterIdx, pageIdx) {
+  const ext  = file.name.split('.').pop();
+  const path = `${hqId}/${chapterIdx}/${pageIdx}.${ext}`;
+  const { error } = await supabase.storage.from('hq-pages').upload(path, file, { upsert: true });
+  if (error) throw new Error(error.message);
+  return supabase.storage.from('hq-pages').getPublicUrl(path).data.publicUrl;
+}
+
+async function uploadProfileImage(file, slot) {
+  const ext  = file.name.split('.').pop();
+  const path = `${USER_ID}/${slot}.${ext}`;
+  const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true });
+  if (error) throw new Error(error.message);
+  return supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl;
 }
 
 // Inicializações básicas de UI e dados
