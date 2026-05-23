@@ -21,6 +21,11 @@ let USER_ID = null;
 let activeCategory = "Todos";
 let realtimeStarted = false;
 
+window.toggleTheme = function() {
+  const isLight = document.documentElement.classList.toggle("light-mode");
+  localStorage.setItem("vyra-theme", isLight ? "light" : "dark");
+};
+
 let user = {
   name: "Usuário",
   user: "@user",
