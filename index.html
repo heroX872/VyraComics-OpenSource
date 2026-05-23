@@ -1,1456 +1,621 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>VyraComics | Bem-vindo</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --border: #2a2a2a;
+            --purple: #7c3aed;
+            --purple-soft: #9d5cf6;
+            --purple-glow: rgba(124,58,237,0.45);
+            --text: #f0f0f0;
+            --muted: #666;
+        }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Inter',sans-serif;
+        }
 
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+        body{
+            background-color:var(--bg);
+            color:var(--text);
+            overflow:hidden;
+            height:100vh;
 
-<title>VyraComics</title>
+            background-image:
+                radial-gradient(circle, rgba(124,58,237,0.1) 1px, transparent 1px);
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            background-size:22px 22px;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+        /* LANDING */
 
-<style>
+        #landing-screen{
+            position:fixed;
+            inset:0;
+            z-index:100;
 
-/* =========================
-   ROOT
-========================= */
+            background:
+                linear-gradient(165deg,#050505 30%,#1e0b3d 100%);
 
-:root{
-  --bg:#070707;
-  --surface:#121212;
-  --surface2:#181818;
-  --border:#2a2a2a;
+            display:flex;
+            align-items:center;
+            justify-content:center;
 
-  --purple:#7c3aed;
-  --purple-soft:#9d5cf6;
+            padding:20px;
+        }
 
-  --text:#f2f2f2;
-  --muted:#8b8b8b;
+        .hero-content{
+            text-align:center;
+            max-width:500px;
+        }
 
-  --radius:18px;
+        .logo-main{
+            height:80px;
+            margin-bottom:24px;
+            filter:drop-shadow(0 0 15px var(--purple-glow));
+        }
 
-  --header-h:64px;
-  --nav-h:76px;
-}
+        h1{
+            font-family:'Bangers',cursive;
+            font-size:4rem;
+            letter-spacing:2px;
+            line-height:0.9;
+            margin-bottom:20px;
+        }
 
-/* =========================
-   RESET
-========================= */
+        h1 span{
+            color:var(--purple-soft);
+            text-shadow:0 0 20px var(--purple-glow);
+        }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+        .hero-p{
+            color:var(--muted);
+            margin-bottom:40px;
+            font-size:1.1rem;
+        }
 
-html{
-  scroll-behavior:smooth;
-}
+        .btn-start{
+            background:#fff;
+            color:#000;
+            border:none;
 
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:'Inter',sans-serif;
-  min-height:100vh;
-  padding-bottom:110px;
-}
+            padding:20px 50px;
 
-/* =========================
-   HEADER
-========================= */
+            border-radius:50px;
 
-header{
-  position:sticky;
-  top:0;
-  z-index:999;
+            font-weight:900;
+            font-size:1.2rem;
 
-  height:var(--header-h);
+            cursor:pointer;
+            width:100%;
 
-  background:#0b0b0b;
+            transition:0.3s;
+        }
 
-  border-bottom:1px solid rgba(124,58,237,.2);
+        /* MODAL */
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
+        #modal-onboarding{
+            position:fixed;
+            inset:0;
 
-  padding:0 16px;
-}
+            background:rgba(0,0,0,0.96);
+            backdrop-filter:blur(15px);
 
-.logo-container{
-  cursor:pointer;
-}
+            z-index:200;
 
-.logo-container img{
-  width:170px;
-  object-fit:contain;
-  display:block;
-}
+            display:none;
+            align-items:center;
+            justify-content:center;
 
-/* =========================
-   SCREENS
-========================= */
+            padding:20px;
+        }
 
-.screen{
-  display:none;
-  padding:18px 16px;
-  max-width:700px;
-  margin:auto;
-}
+        .card{
+            background:var(--surface);
 
-.screen.active{
-  display:block;
-}
-
-/* =========================
-   HERO
-========================= */
+            width:100%;
+            max-width:420px;
 
-.hero{
-  background:
-    linear-gradient(
-      135deg,
-      #17072f,
-      #090909
-    );
+            padding:40px 30px;
 
-  border:1px solid rgba(124,58,237,.2);
+            border-radius:32px;
+            border:1px solid var(--border);
 
-  border-radius:26px;
+            text-align:center;
+        }
 
-  padding:28px;
+        .step{
+            display:none;
+        }
 
-  margin-bottom:22px;
-}
+        .step.active{
+            display:block;
+        }
 
-.hero h1{
-  font-family:'Bangers',cursive;
-  font-size:56px;
-  line-height:1;
-  letter-spacing:3px;
-}
+        .input-group{
+            margin:20px 0;
+            text-align:left;
+        }
 
-.hero h1 span{
-  color:var(--purple-soft);
-}
+        input{
+            width:100%;
 
-.hero p{
-  margin-top:12px;
-  color:var(--muted);
-  line-height:1.6;
-}
-
-/* =========================
-   SEARCH
-========================= */
-
-.search-wrap{
-  position:relative;
-  margin-bottom:22px;
-}
+            background:#000;
+            border:1.5px solid var(--border);
 
-.search-wrap input{
-  width:100%;
-  height:54px;
+            padding:18px;
 
-  border:none;
-  outline:none;
+            border-radius:16px;
 
-  background:var(--surface);
+            color:#fff;
+            font-size:1rem;
 
-  border:1px solid var(--border);
+            outline:none;
+        }
 
-  border-radius:14px;
+        input:focus{
+            border-color:var(--purple);
+        }
 
-  color:var(--text);
+        .btn-next{
+            background:var(--purple);
+            color:#fff;
 
-  padding:0 16px 0 48px;
-}
+            border:none;
 
-.search-wrap input:focus{
-  border-color:var(--purple);
-}
+            width:100%;
+            padding:18px;
 
-.search-icon{
-  position:absolute;
-  left:16px;
-  top:50%;
-  transform:translateY(-50%);
-  color:var(--muted);
-}
+            border-radius:16px;
 
-/* =========================
-   TITLES
-========================= */
+            font-weight:800;
+            font-size:1.1rem;
 
-.section-title{
-  font-family:'Bangers',cursive;
-  font-size:30px;
-  letter-spacing:2px;
-  margin-bottom:16px;
-}
+            cursor:pointer;
+        }
 
-/* =========================
-   GRID
-========================= */
+        /* AVATAR */
 
-.hq-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
-}
+        .avatar-circle{
+            width:140px;
+            height:140px;
 
-.hq-card{
-  background:var(--surface);
+            border:2px dashed var(--purple);
 
-  border-radius:20px;
+            border-radius:50%;
 
-  overflow:hidden;
+            margin:20px auto;
 
-  border:1px solid rgba(124,58,237,.15);
+            display:flex;
+            align-items:center;
+            justify-content:center;
 
-  cursor:pointer;
+            cursor:pointer;
 
-  transition:.2s;
-}
+            overflow:hidden;
+            position:relative;
+        }
 
-.hq-card:hover{
-  transform:translateY(-2px);
-}
+        .avatar-circle img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
 
-.hq-card-img{
-  width:100%;
-  height:230px;
-  object-fit:cover;
-  display:block;
-}
+        .avatar-circle span{
+            font-size:2rem;
+            color:var(--purple);
+        }
 
-.hq-card-body{
-  padding:12px;
-}
+        #avatar-img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            display:none;
+        }
 
-.hq-card-title{
-  font-size:14px;
-  font-weight:800;
-}
+        /* DOTS */
 
-.hq-card-sub{
-  color:var(--purple-soft);
-  font-size:12px;
-  margin-top:4px;
-}
+        .progress-dots{
+            display:flex;
+            gap:8px;
+            justify-content:center;
+            margin-bottom:30px;
+        }
 
-/* =========================
-   BOX
-========================= */
+        .dot{
+            width:8px;
+            height:8px;
 
-.box{
-  background:var(--surface);
+            background:var(--border);
 
-  border:1px solid var(--border);
+            border-radius:50%;
+        }
 
-  border-radius:22px;
+        .dot.active{
+            background:var(--purple);
+            width:20px;
+            border-radius:4px;
+        }
 
-  padding:20px;
-
-  margin-bottom:22px;
-}
-
-.box-title{
-  font-family:'Bangers',cursive;
-  font-size:24px;
-  color:var(--purple-soft);
-  margin-bottom:16px;
-}
-
-.input-label{
-  display:block;
-
-  margin-top:14px;
-  margin-bottom:8px;
-
-  font-size:11px;
-
-  text-transform:uppercase;
-
-  color:#888;
-
-  font-weight:700;
-}
-
-input,
-textarea,
-select{
-  width:100%;
-
-  background:#0c0c0c;
-
-  border:1px solid var(--border);
-
-  border-radius:14px;
-
-  color:var(--text);
-
-  padding:14px;
-
-  outline:none;
-}
-
-textarea{
-  resize:none;
-  min-height:120px;
-}
-
-.btn-primary{
-  width:100%;
-
-  margin-top:16px;
-
-  border:none;
-
-  background:var(--purple);
-
-  color:white;
-
-  padding:15px;
-
-  border-radius:14px;
-
-  font-weight:800;
-
-  cursor:pointer;
-}
-
-/* =========================
-   PROFILE
-========================= */
-
-.p-banner{
-  height:170px;
-
-  border-radius:24px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #190932,
-      #090909
-    );
-
-  background-size:cover;
-  background-position:center;
-}
-
-.p-avatar{
-  width:96px;
-  height:96px;
-
-  border-radius:50%;
-
-  border:4px solid var(--purple);
-
-  background:#222;
-
-  background-size:cover;
-  background-position:center;
-
-  margin:-48px auto 14px;
-}
-
-.profile-name{
-  font-family:'Bangers',cursive;
-  font-size:30px;
-  text-align:center;
-}
-
-.profile-user{
-  text-align:center;
-  color:var(--purple-soft);
-  margin-bottom:18px;
-}
-
-/* =========================
-   READER
-========================= */
-
-.reader-cover{
-  width:100%;
-  border-radius:22px;
-  margin-bottom:20px;
-}
-
-.reader-title{
-  font-size:34px;
-  font-weight:900;
-  margin-bottom:8px;
-}
-
-.reader-author{
-  color:var(--purple-soft);
-  margin-bottom:18px;
-}
-
-.reader-synopsis{
-  line-height:1.7;
-  color:#ccc;
-}
-
-/* =========================
-   NAVBAR
-========================= */
-
-.bottom-nav{
-  position:fixed;
-  left:0;
-  bottom:0;
-
-  width:100%;
-  height:var(--nav-h);
-
-  background:#090909;
-
-  border-top:1px solid rgba(124,58,237,.2);
-
-  display:flex;
-
-  z-index:9999;
-}
-
-.nav-item{
-  flex:1;
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-
-  color:var(--muted);
-
-  cursor:pointer;
-
-  transition:.2s;
-
-  user-select:none;
-}
-
-.nav-item.active{
-  color:var(--purple-soft);
-}
-
-.nav-icon{
-  font-size:22px;
-  margin-bottom:4px;
-}
-
-.nav-text{
-  font-size:11px;
-  font-weight:700;
-}
-
-/* =========================
-   MOBILE
-========================= */
-
-@media(max-width:540px){
-
-  .hero h1{
-    font-size:46px;
-  }
-
-  .hq-card-img{
-    height:190px;
-  }
-
-}
-
-</style>
+    </style>
 </head>
-
 <body>
 
-<!-- =========================
-     HEADER
-========================= -->
-
-<header>
-
-  <div
-    class="logo-container"
-    onclick="navTo('inicio')"
-  >
-    <img src="logovyracomics.png" alt="VyraComics">
-  </div>
-
-</header>
-
-<!-- =========================
-     INICIO
-========================= -->
-
-<section id="inicio" class="screen active">
-
-  <div class="hero">
-
-    <h1>
-      LEIA.<br>
-      <span>SINTA.</span><br>
-      VIVA.
-    </h1>
-
-    <p>
-      As melhores HQs independentes em um só lugar.
-    </p>
-
-  </div>
-
-  <div class="search-wrap">
-
-    <span class="search-icon">
-      🔍
-    </span>
-
-    <input
-      type="search"
-      placeholder="Buscar HQs..."
-      oninput="filterHome(this.value)"
-    >
-
-  </div>
-
-  <div class="section-title">
-    Novidades
-  </div>
-
-  <div id="home-list" class="hq-grid"></div>
-
-</section>
-
-<!-- =========================
-     CATEGORIAS
-========================= -->
-
-<section id="categorias" class="screen">
-
-  <div class="section-title">
-    Categorias
-  </div>
-
-  <div class="box">
-
-    <p style="
-      line-height:1.7;
-      color:#ccc;
-    ">
-      Em breve:
-      ação, fantasia, terror,
-      romance, sci-fi e toda
-      a confusão emocional
-      que humanos chamam de arte.
-    </p>
-
-  </div>
-
-</section>
-
-<!-- =========================
-     ESTUDIO
-========================= -->
-
-<section id="estudio" class="screen">
-
-  <div class="section-title">
-    Estúdio
-  </div>
-
-  <div class="box">
-
-    <div class="box-title">
-      Publicar HQ
-    </div>
-
-    <label class="input-label">
-      Nome da obra
-    </label>
-
-    <input type="text" id="hq-name">
-
-    <label class="input-label">
-      Gênero
-    </label>
-
-    <select id="hq-genre">
-
-      <option>Ação</option>
-      <option>Drama</option>
-      <option>Fantasia</option>
-      <option>Comédia</option>
-
-    </select>
-
-    <label class="input-label">
-      Sinopse
-    </label>
-
-    <textarea id="hq-synopsis"></textarea>
-
-    <label class="input-label">
-      Capa
-    </label>
-
-    <input
-      type="file"
-      id="hq-cover"
-      accept="image/*"
-    >
-
-    <button
-      class="btn-primary"
-      onclick="createHQ()"
-    >
-      + Criar HQ
-    </button>
-
-  </div>
-
-  <div class="section-title">
-    Suas HQs
-  </div>
-
-  <div id="studio-list" class="hq-grid"></div>
-
-</section>
-
-<!-- =========================
-     PERFIL
-========================= -->
-
-<section id="perfil" class="screen">
-
-  <div
-    class="p-banner"
-    id="profile-banner"
-  ></div>
-
-  <div
-    class="p-avatar"
-    id="profile-avatar"
-  ></div>
-
-  <div
-    class="profile-name"
-    id="profile-name"
-  >
-    Gabriel
-  </div>
-
-  <div
-    class="profile-user"
-    id="profile-user"
-  >
-    @gabriel
-  </div>
-
-  <div class="box">
-
-    <div class="box-title">
-      Editar Perfil
-    </div>
-
-    <label class="input-label">
-      Nome
-    </label>
-
-    <input type="text" id="edit-name">
-
-    <label class="input-label">
-      Username
-    </label>
-
-    <input type="text" id="edit-user">
-
-    <label class="input-label">
-      Avatar
-    </label>
-
-    <input
-      type="file"
-      id="edit-avatar"
-      accept="image/*"
-    >
-
-    <label class="input-label">
-      Banner
-    </label>
-
-    <input
-      type="file"
-      id="edit-banner"
-      accept="image/*"
-    >
-
-    <button
-      class="btn-primary"
-      onclick="saveProfile()"
-    >
-      Salvar Perfil
-    </button>
-
-  </div>
-
-  <div class="section-title">
-    Minhas Obras
-  </div>
-
-  <div
-    id="profile-list"
-    class="hq-grid"
-  ></div>
-
-</section>
-
-<!-- =========================
-     READER
-========================= -->
-
-<section id="reader" class="screen">
-
-  <button
-    class="btn-primary"
-    onclick="navTo('inicio')"
-  >
-    ← Voltar
-  </button>
-
-  <div
-    id="reader-content"
-    style="margin-top:20px;"
-  ></div>
-
-</section>
-
-<!-- =========================
-     NAVBAR
-========================= -->
-
-<nav class="bottom-nav">
-
-  <div
-    class="nav-item active"
-    data-screen="inicio"
-  >
-
-    <div class="nav-icon">
-      🏠
-    </div>
-
-    <div class="nav-text">
-      Início
-    </div>
-
-  </div>
-
-  <div
-    class="nav-item"
-    data-screen="categorias"
-  >
-
-    <div class="nav-icon">
-      📚
-    </div>
-
-    <div class="nav-text">
-      Categorias
-    </div>
-
-  </div>
-
-  <div
-    class="nav-item"
-    data-screen="estudio"
-  >
-
-    <div class="nav-icon">
-      🎨
-    </div>
-
-    <div class="nav-text">
-      Estúdio
-    </div>
-
-  </div>
-
-  <div
-    class="nav-item"
-    data-screen="perfil"
-  >
-
-    <div class="nav-icon">
-      👤
-    </div>
-
-    <div class="nav-text">
-      Perfil
-    </div>
-
-  </div>
-
-</nav>
-
-<script>
-
-/* =========================
-   DATABASE LOCAL
-========================= */
-
-let hqs = [];
-
-let user = {
-
-  name:"Gabriel",
-  username:"@gabriel",
-  avatar:"",
-  banner:""
-
-};
-
-/* =========================
-   NAV MAP
-========================= */
-
-const NAV_MAP = {
-
-  inicio:0,
-  categorias:1,
-  estudio:2,
-  perfil:3,
-  reader:-1
-
-};
-
-/* =========================
-   INIT
-========================= */
-
-init();
-
-function init(){
-
-  loadLocal();
-
-  renderHome(hqs);
-
-  renderStudio();
-
-  renderProfileList();
-
-  renderProfile();
-
-  bindNavButtons();
-
-  handleRoute();
-
-}
-
-/* =========================
-   NAV BUTTONS
-========================= */
-
-function bindNavButtons(){
-
-  document
-    .querySelectorAll(".nav-item")
-    .forEach(item=>{
-
-      item.addEventListener("click",()=>{
-
-        const screen =
-          item.dataset.screen;
-
-        navTo(screen);
-
-      });
-
-    });
-
-}
-
-/* =========================
-   ROUTER
-========================= */
-
-window.navTo = function(screen){
-
-  window.location.hash = screen;
-
-  handleRoute();
-
-};
-
-function handleRoute(){
-
-  const hash =
-    window.location.hash.replace("#","")
-    || "inicio";
-
-  document
-    .querySelectorAll(".screen")
-    .forEach(el=>{
-
-      el.classList.remove("active");
-
-    });
-
-  const target =
-    document.getElementById(hash);
-
-  if(target){
-
-    target.classList.add("active");
-
-  }
-
-  document
-    .querySelectorAll(".nav-item")
-    .forEach((item,index)=>{
-
-      item.classList.toggle(
-        "active",
-        index === NAV_MAP[hash]
-      );
-
-    });
-
-  window.scrollTo({
-
-    top:0,
-    behavior:"smooth"
-
-  });
-
-}
-
-window.addEventListener(
-  "hashchange",
-  handleRoute
-);
-
-/* =========================
-   STORAGE
-========================= */
-
-function saveLocal(){
-
-  localStorage.setItem(
-    "vyra_hqs",
-    JSON.stringify(hqs)
-  );
-
-  localStorage.setItem(
-    "vyra_user",
-    JSON.stringify(user)
-  );
-
-}
-
-function loadLocal(){
-
-  const savedHQs =
-    localStorage.getItem("vyra_hqs");
-
-  const savedUser =
-    localStorage.getItem("vyra_user");
-
-  if(savedHQs){
-
-    hqs = JSON.parse(savedHQs);
-
-  }
-
-  if(savedUser){
-
-    user = JSON.parse(savedUser);
-
-  }
-
-}
-
-/* =========================
-   HOME
-========================= */
-
-function renderHome(list){
-
-  const el =
-    document.getElementById("home-list");
-
-  if(!list.length){
-
-    el.innerHTML = `
-      <p style="
-        color:var(--muted);
-      ">
-        Nenhuma HQ encontrada.
-      </p>
-    `;
-
-    return;
-
-  }
-
-  el.innerHTML =
-    list.map(h=>`
-
-      <div
-        class="hq-card"
-        onclick="openHQ('${h.id}')"
-      >
-
-        <img
-          class="hq-card-img"
-          src="${h.cover}"
-        >
-
-        <div class="hq-card-body">
-
-          <div class="hq-card-title">
-            ${h.name}
-          </div>
-
-          <div class="hq-card-sub">
-            ${h.author}
-          </div>
+    <section id="landing-screen">
+
+        <div class="hero-content">
+
+            <img
+                src="images/logovyracomics.png"
+                class="logo-main"
+                alt="Vyra"
+            >
+
+            <h1>
+                O SEU NOVO<br>
+                <span>UNIVERSO.</span>
+            </h1>
+
+            <p class="hero-p">
+                Entre para a maior comunidade indie do Brasil.
+            </p>
+
+            <button
+                class="btn-start"
+                onclick="openOnboarding()"
+            >
+                COMEÇAR JÁ
+            </button>
 
         </div>
 
-      </div>
+    </section>
 
-    `).join("");
+    <!-- MODAL -->
 
-}
+    <div id="modal-onboarding">
 
-/* =========================
-   SEARCH
-========================= */
+        <div class="card">
 
-window.filterHome = function(query){
+            <div class="progress-dots">
+                <div class="dot active" id="d1"></div>
+                <div class="dot" id="d2"></div>
+                <div class="dot" id="d3"></div>
+            </div>
 
-  const q =
-    query.toLowerCase().trim();
+            <!-- STEP 1 -->
 
-  if(!q){
+            <div class="step active" id="step-1">
 
-    renderHome(hqs);
+                <h2>Como quer ser chamado?</h2>
 
-    return;
+                <div class="input-group">
 
-  }
+                    <input
+                        type="text"
+                        id="reg-name"
+                        placeholder="Nick ou Nome"
+                        autocomplete="off"
+                    >
 
-  const filtered =
-    hqs.filter(h=>
+                </div>
 
-      h.name.toLowerCase().includes(q)
-      ||
-      h.genre.toLowerCase().includes(q)
-      ||
-      h.author.toLowerCase().includes(q)
+                <button
+                    class="btn-next"
+                    onclick="goTo(2)"
+                >
+                    Continuar
+                </button>
 
-    );
+            </div>
 
-  renderHome(filtered);
+            <!-- STEP 2 -->
 
-};
+            <div class="step" id="step-2">
 
-/* =========================
-   CREATE HQ
-========================= */
+                <h2>Dados de Acesso</h2>
 
-window.createHQ = async function(){
+                <div class="input-group">
 
-  const name =
-    document
-      .getElementById("hq-name")
-      .value
-      .trim();
+                    <input
+                        type="email"
+                        id="reg-email"
+                        placeholder="E-mail"
+                    >
 
-  const genre =
-    document
-      .getElementById("hq-genre")
-      .value;
+                    <input
+                        type="password"
+                        id="reg-pass"
+                        placeholder="Senha"
+                        style="margin-top:10px;"
+                    >
 
-  const synopsis =
-    document
-      .getElementById("hq-synopsis")
-      .value
-      .trim();
+                </div>
 
-  const file =
-    document
-      .getElementById("hq-cover")
-      .files[0];
+                <button
+                    class="btn-next"
+                    onclick="goTo(3)"
+                >
+                    Quase lá...
+                </button>
 
-  if(!name || !file){
+            </div>
 
-    alert(
-      "Preencha os campos obrigatórios."
-    );
+            <!-- STEP 3 -->
 
-    return;
+            <div class="step" id="step-3">
 
-  }
+                <h2>Identidade Visual</h2>
 
-  const cover =
-    await toBase64(file);
+                <label
+                    class="avatar-circle"
+                    id="avatar-preview"
+                >
 
-  const hq = {
+                    <span id="avatar-plus">+</span>
 
-    id:Date.now(),
+                    <img id="avatar-img">
 
-    name,
+                    <input
+                        type="file"
+                        id="avatar-input"
+                        hidden
+                        accept="image/*"
+                        onchange="previewImg(this)"
+                    >
 
-    genre,
+                </label>
 
-    synopsis,
+                <button
+                    class="btn-next"
+                    id="btn-finish"
+                    onclick="handleSignUp()"
+                >
+                    Finalizar e Entrar
+                </button>
 
-    cover,
-
-    author:user.username
-
-  };
-
-  hqs.unshift(hq);
-
-  saveLocal();
-
-  renderHome(hqs);
-
-  renderStudio();
-
-  renderProfileList();
-
-  clearStudio();
-
-  navTo("inicio");
-
-};
-
-/* =========================
-   CLEAR FORM
-========================= */
-
-function clearStudio(){
-
-  document.getElementById(
-    "hq-name"
-  ).value = "";
-
-  document.getElementById(
-    "hq-synopsis"
-  ).value = "";
-
-  document.getElementById(
-    "hq-cover"
-  ).value = "";
-
-}
-
-/* =========================
-   STUDIO
-========================= */
-
-function renderStudio(){
-
-  const el =
-    document.getElementById(
-      "studio-list"
-    );
-
-  const mine =
-    hqs.filter(h=>
-
-      h.author === user.username
-
-    );
-
-  if(!mine.length){
-
-    el.innerHTML = `
-      <p style="
-        color:var(--muted);
-      ">
-        Você ainda não publicou HQ.
-      </p>
-    `;
-
-    return;
-
-  }
-
-  el.innerHTML =
-    mine.map(h=>`
-
-      <div
-        class="hq-card"
-        onclick="openHQ('${h.id}')"
-      >
-
-        <img
-          class="hq-card-img"
-          src="${h.cover}"
-        >
-
-        <div class="hq-card-body">
-
-          <div class="hq-card-title">
-            ${h.name}
-          </div>
-
-          <div class="hq-card-sub">
-            ${h.genre}
-          </div>
+            </div>
 
         </div>
 
-      </div>
-
-    `).join("");
-
-}
-
-/* =========================
-   PROFILE
-========================= */
-
-function renderProfile(){
-
-  document.getElementById(
-    "profile-name"
-  ).textContent = user.name;
-
-  document.getElementById(
-    "profile-user"
-  ).textContent = user.username;
-
-  document.getElementById(
-    "edit-name"
-  ).value = user.name;
-
-  document.getElementById(
-    "edit-user"
-  ).value =
-    user.username.replace("@","");
-
-  if(user.avatar){
-
-    document.getElementById(
-      "profile-avatar"
-    ).style.backgroundImage =
-      `url('${user.avatar}')`;
-
-  }
-
-  if(user.banner){
-
-    document.getElementById(
-      "profile-banner"
-    ).style.backgroundImage =
-      `url('${user.banner}')`;
-
-  }
-
-}
-
-/* =========================
-   SAVE PROFILE
-========================= */
-
-window.saveProfile = async function(){
-
-  const name =
-    document
-      .getElementById("edit-name")
-      .value
-      .trim();
-
-  const username =
-    document
-      .getElementById("edit-user")
-      .value
-      .trim();
-
-  const avatarFile =
-    document
-      .getElementById("edit-avatar")
-      .files[0];
-
-  const bannerFile =
-    document
-      .getElementById("edit-banner")
-      .files[0];
-
-  if(!name || !username){
-
-    alert("Preencha os campos.");
-
-    return;
-
-  }
-
-  user.name = name;
-
-  user.username =
-    "@" + username;
-
-  if(avatarFile){
-
-    user.avatar =
-      await toBase64(avatarFile);
-
-  }
-
-  if(bannerFile){
-
-    user.banner =
-      await toBase64(bannerFile);
-
-  }
-
-  saveLocal();
-
-  renderProfile();
-
-  renderHome(hqs);
-
-  renderStudio();
-
-  renderProfileList();
-
-  alert("Perfil atualizado.");
-
-};
-
-/* =========================
-   PROFILE LIST
-========================= */
-
-function renderProfileList(){
-
-  const el =
-    document.getElementById(
-      "profile-list"
-    );
-
-  const mine =
-    hqs.filter(h=>
-
-      h.author === user.username
-
-    );
-
-  if(!mine.length){
-
-    el.innerHTML = `
-      <p style="
-        color:var(--muted);
-      ">
-        Sem HQs ainda.
-      </p>
-    `;
-
-    return;
-
-  }
-
-  el.innerHTML =
-    mine.map(h=>`
-
-      <div
-        class="hq-card"
-        onclick="openHQ('${h.id}')"
-      >
-
-        <img
-          class="hq-card-img"
-          src="${h.cover}"
-        >
-
-        <div class="hq-card-body">
-
-          <div class="hq-card-title">
-            ${h.name}
-          </div>
-
-        </div>
-
-      </div>
-
-    `).join("");
-
-}
-
-/* =========================
-   OPEN HQ
-========================= */
-
-window.openHQ = function(id){
-
-  const hq =
-    hqs.find(h=>h.id == id);
-
-  if(!hq) return;
-
-  document.getElementById(
-    "reader-content"
-  ).innerHTML = `
-
-    <img
-      class="reader-cover"
-      src="${hq.cover}"
-    >
-
-    <div class="reader-title">
-      ${hq.name}
     </div>
 
-    <div class="reader-author">
-      ${hq.author}
-    </div>
+    <script type="module">
 
-    <div class="reader-synopsis">
-      ${hq.synopsis || "Sem sinopse."}
-    </div>
+        import { createClient }
+        from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-  `;
+        // SUPABASE
 
-  navTo("reader");
+        const URL =
+            "https://ihiuygpxoxttwmbwbpns.supabase.co";
 
-};
+        const KEY =
+            "sb_publishable_Te0kRJCi7DbW21iEj9w6QA_iO9av2fR";
 
-/* =========================
-   BASE64
-========================= */
+        const supabase = createClient(URL, KEY);
 
-function toBase64(file){
+        // OPEN MODAL
 
-  return new Promise((resolve,reject)=>{
+        window.openOnboarding = () => {
 
-    const reader =
-      new FileReader();
+            document.getElementById(
+                'modal-onboarding'
+            ).style.display = 'flex';
 
-    reader.readAsDataURL(file);
+        };
 
-    reader.onload =
-      ()=>resolve(reader.result);
+        // CHANGE STEP
 
-    reader.onerror = reject;
+        window.goTo = (n) => {
 
-  });
+            document
+                .querySelectorAll('.step')
+                .forEach(s => s.classList.remove('active'));
 
-}
+            document
+                .querySelectorAll('.dot')
+                .forEach(d => d.classList.remove('active'));
 
-</script>
+            document
+                .getElementById('step-' + n)
+                .classList.add('active');
+
+            document
+                .getElementById('d' + n)
+                .classList.add('active');
+        };
+
+        // PREVIEW IMAGE
+
+        window.previewImg = (input) => {
+
+            const file = input.files[0];
+
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+
+                document.getElementById(
+                    'avatar-plus'
+                ).style.display = 'none';
+
+                const img =
+                    document.getElementById(
+                        'avatar-img'
+                    );
+
+                img.src = e.target.result;
+                img.style.display = 'block';
+
+            };
+
+            reader.readAsDataURL(file);
+        };
+
+        // SIGNUP
+
+        window.handleSignUp = async () => {
+
+            const btn =
+                document.getElementById('btn-finish');
+
+            btn.innerText = "Preparando tudo...";
+            btn.disabled = true;
+
+            try {
+
+                const name =
+                    document.getElementById('reg-name')
+                    .value
+                    .trim();
+
+                const email =
+                    document.getElementById('reg-email')
+                    .value
+                    .trim();
+
+                const pass =
+                    document.getElementById('reg-pass')
+                    .value;
+
+                const avatarInput =
+                    document.getElementById(
+                        'avatar-input'
+                    );
+
+                const file =
+                    avatarInput.files[0];
+
+                // VALIDATION
+
+                if (!name || !email || !pass) {
+
+                    throw new Error(
+                        "Preencha todos os campos."
+                    );
+
+                }
+
+                // AUTH
+
+                const {
+                    data,
+                    error
+                } = await supabase.auth.signUp({
+
+                    email,
+                    password: pass,
+
+                    options: {
+                        data: {
+                            display_name: name
+                        }
+                    }
+
+                });
+
+                if (error) throw error;
+
+                const user = data.user;
+
+                if (!user) {
+
+                    throw new Error(
+                        "Usuário não criado."
+                    );
+
+                }
+
+                let avatarPath = null;
+
+                // UPLOAD AVATAR
+
+                if (file) {
+
+                    const ext =
+                        file.name.split('.').pop();
+
+                    const fileName =
+                        `${user.id}-${Date.now()}.${ext}`;
+
+                    const {
+                        data: uploadData,
+                        error: uploadError
+                    } = await supabase.storage
+                        .from('avatars')
+                        .upload(fileName, file);
+
+                    if (uploadError)
+                        throw uploadError;
+
+                    avatarPath = uploadData.path;
+                }
+
+                // INSERT PROFILE
+
+                const {
+                    error: profileError
+                } = await supabase
+                    .from('profiles')
+                    .insert([
+                        {
+                            id: user.id,
+                            username: name,
+                            display_name: name,
+                            avatar_url: avatarPath
+                        }
+                    ]);
+
+                if (profileError)
+                    throw profileError;
+
+                // SUCCESS
+
+                btn.innerText = "Entrando...";
+
+                setTimeout(() => {
+
+                    window.location.href =
+                        "dashboard.html";
+
+                }, 700);
+
+            }
+            catch(err){
+
+                console.error(err);
+
+                alert(
+                    "Erro: " + err.message
+                );
+
+                btn.innerText =
+                    "Finalizar e Entrar";
+
+                btn.disabled = false;
+            }
+        };
+
+    </script>
 
 </body>
-</html
+</html>

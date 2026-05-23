@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+
+<title>VyraComics</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+
+/* =========================
+   ROOT
+========================= */
+
+:root{
+  --bg:#070707;
+  --surface:#121212;
+  --surface2:#181818;
+  --border:#2a2a2a;
+
+  --purple:#7c3aed;
+  --purple-soft:#9d5cf6;
+
+  --text:#f2f2f2;
+  --muted:#8b8b8b;
+
+  --radius:18px;
+
+  --header-h:64px;
+  --nav-h:76px;
+}
+
+/* =========================
+   RESET
+========================= */
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  padding-bottom:110px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+header{
+  position:sticky;
+  top:0;
+  z-index:999;
+
+  height:var(--header-h);
+
+  background:#0b0b0b;
+
+  border-bottom:1px solid rgba(124,58,237,.2);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0 16px;
+}
+
+.logo-container{
+  cursor:pointer;
+}
+
+.logo-container img{
+  width:170px;
+  object-fit:contain;
+  display:block;
+}
+
+/* =========================
+   SCREENS
+========================= */
+
+.screen{
+  display:none;
+  padding:18px 16px;
+  max-width:700px;
+  margin:auto;
+}
+
+.screen.active{
+  display:block;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+  background:
+    linear-gradient(
+      135deg,
+      #17072f,
+      #090909
+    );
+
+  border:1px solid rgba(124,58,237,.2);
+
+  border-radius:26px;
+
+  padding:28px;
+
+  margin-bottom:22px;
+}
+
+.hero h1{
+  font-family:'Bangers',cursive;
+  font-size:56px;
+  line-height:1;
+  letter-spacing:3px;
+}
+
+.hero h1 span{
+  color:var(--purple-soft);
+}
+
+.hero p{
+  margin-top:12px;
+  color:var(--muted);
+  line-height:1.6;
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+.search-wrap{
+  position:relative;
+  margin-bottom:22px;
+}
+
+.search-wrap input{
+  width:100%;
+  height:54px;
+
+  border:none;
+  outline:none;
+
+  background:var(--surface);
+
+  border:1px solid var(--border);
+
+  border-radius:14px;
+
+  color:var(--text);
+
+  padding:0 16px 0 48px;
+}
+
+.search-wrap input:focus{
+  border-color:var(--purple);
+}
+
+.search-icon{
+  position:absolute;
+  left:16px;
+  top:50%;
+  transform:translateY(-50%);
+  color:var(--muted);
+}
+
+/* =========================
+   TITLES
+========================= */
+
+.section-title{
+  font-family:'Bangers',cursive;
+  font-size:30px;
+  letter-spacing:2px;
+  margin-bottom:16px;
+}
+
+/* =========================
+   GRID
+========================= */
+
+.hq-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+.hq-card{
+  background:var(--surface);
+
+  border-radius:20px;
+
+  overflow:hidden;
+
+  border:1px solid rgba(124,58,237,.15);
+
+  cursor:pointer;
+
+  transition:.2s;
+}
+
+.hq-card:hover{
+  transform:translateY(-2px);
+}
+
+.hq-card-img{
+  width:100%;
+  height:230px;
+  object-fit:cover;
+  display:block;
+}
+
+.hq-card-body{
+  padding:12px;
+}
+
+.hq-card-title{
+  font-size:14px;
+  font-weight:800;
+}
+
+.hq-card-sub{
+  color:var(--purple-soft);
+  font-size:12px;
+  margin-top:4px;
+}
+
+/* =========================
+   BOX
+========================= */
+
+.box{
+  background:var(--surface);
+
+  border:1px solid var(--border);
+
+  border-radius:22px;
+
+  padding:20px;
+
+  margin-bottom:22px;
+}
+
+.box-title{
+  font-family:'Bangers',cursive;
+  font-size:24px;
+  color:var(--purple-soft);
+  margin-bottom:16px;
+}
+
+.input-label{
+  display:block;
+
+  margin-top:14px;
+  margin-bottom:8px;
+
+  font-size:11px;
+
+  text-transform:uppercase;
+
+  color:#888;
+
+  font-weight:700;
+}
+
+input,
+textarea,
+select{
+  width:100%;
+
+  background:#0c0c0c;
+
+  border:1px solid var(--border);
+
+  border-radius:14px;
+
+  color:var(--text);
+
+  padding:14px;
+
+  outline:none;
+}
+
+textarea{
+  resize:none;
+  min-height:120px;
+}
+
+.btn-primary{
+  width:100%;
+
+  margin-top:16px;
+
+  border:none;
+
+  background:var(--purple);
+
+  color:white;
+
+  padding:15px;
+
+  border-radius:14px;
+
+  font-weight:800;
+
+  cursor:pointer;
+}
+
+/* =========================
+   PROFILE
+========================= */
+
+.p-banner{
+  height:170px;
+
+  border-radius:24px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #190932,
+      #090909
+    );
+
+  background-size:cover;
+  background-position:center;
+}
+
+.p-avatar{
+  width:96px;
+  height:96px;
+
+  border-radius:50%;
+
+  border:4px solid var(--purple);
+
+  background:#222;
+
+  background-size:cover;
+  background-position:center;
+
+  margin:-48px auto 14px;
+}
+
+.profile-name{
+  font-family:'Bangers',cursive;
+  font-size:30px;
+  text-align:center;
+}
+
+.profile-user{
+  text-align:center;
+  color:var(--purple-soft);
+  margin-bottom:18px;
+}
+
+/* =========================
+   READER
+========================= */
+
+.reader-cover{
+  width:100%;
+  border-radius:22px;
+  margin-bottom:20px;
+}
+
+.reader-title{
+  font-size:34px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.reader-author{
+  color:var(--purple-soft);
+  margin-bottom:18px;
+}
+
+.reader-synopsis{
+  line-height:1.7;
+  color:#ccc;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+
+.bottom-nav{
+  position:fixed;
+  left:0;
+  bottom:0;
+
+  width:100%;
+  height:var(--nav-h);
+
+  background:#090909;
+
+  border-top:1px solid rgba(124,58,237,.2);
+
+  display:flex;
+
+  z-index:9999;
+}
+
+.nav-item{
+  flex:1;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  color:var(--muted);
+
+  cursor:pointer;
+
+  transition:.2s;
+
+  user-select:none;
+}
+
+.nav-item.active{
+  color:var(--purple-soft);
+}
+
+.nav-icon{
+  font-size:22px;
+  margin-bottom:4px;
+}
+
+.nav-text{
+  font-size:11px;
+  font-weight:700;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:540px){
+
+  .hero h1{
+    font-size:46px;
+  }
+
+  .hq-card-img{
+    height:190px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+  <div
+    class="logo-container"
+    onclick="navTo('inicio')"
+  >
+    <img src="logovyracomics.png" alt="VyraComics">
+  </div>
+
+</header>
+
+<!-- =========================
+     INICIO
+========================= -->
+
+<section id="inicio" class="screen active">
+
+  <div class="hero">
+
+    <h1>
+      LEIA.<br>
+      <span>SINTA.</span><br>
+      VIVA.
+    </h1>
+
+    <p>
+      As melhores HQs independentes em um só lugar.
+    </p>
+
+  </div>
+
+  <div class="search-wrap">
+
+    <span class="search-icon">
+      🔍
+    </span>
+
+    <input
+      type="search"
+      id="search-input"
+      placeholder="Buscar HQs..."
+      oninput="filterHome(this.value)"
+    >
+
+  </div>
+
+  <div class="section-title">
+    Novidades
+  </div>
+
+  <div id="home-list" class="hq-grid"></div>
+
+</section>
+
+<!-- =========================
+     CATEGORIAS
+========================= -->
+
+<section id="categorias" class="screen">
+
+  <div class="section-title">
+    Categorias
+  </div>
+
+  <div class="box">
+
+    <p style="
+      line-height:1.7;
+      color:#ccc;
+    ">
+      Em breve:
+      ação, fantasia, terror,
+      romance, sci-fi e toda
+      a confusão emocional
+      que humanos chamam de arte.
+    </p>
+
+  </div>
+
+</section>
+
+<!-- =========================
+     ESTUDIO
+========================= -->
+
+<section id="estudio" class="screen">
+
+  <div class="section-title">
+    Estúdio
+  </div>
+
+  <div class="box">
+
+    <div class="box-title">
+      Publicar HQ
+    </div>
+
+    <label class="input-label">
+      Nome da obra
+    </label>
+
+    <input type="text" id="hq-name">
+
+    <label class="input-label">
+      Gênero
+    </label>
+
+    <select id="hq-genre">
+
+      <option>Ação</option>
+      <option>Drama</option>
+      <option>Fantasia</option>
+      <option>Comédia</option>
+
+    </select>
+
+    <label class="input-label">
+      Sinopse
+    </label>
+
+    <textarea id="hq-synopsis"></textarea>
+
+    <label class="input-label">
+      Capa
+    </label>
+
+    <input
+      type="file"
+      id="hq-cover"
+      accept="image/*"
+    >
+
+    <button
+      class="btn-primary"
+      onclick="createHQ()"
+    >
+      + Criar HQ
+    </button>
+
+  </div>
+
+  <div class="section-title">
+    Suas HQs
+  </div>
+
+  <div id="studio-list" class="hq-grid"></div>
+
+</section>
+
+<!-- =========================
+     PERFIL
+========================= -->
+
+<section id="perfil" class="screen">
+
+  <div
+    class="p-banner"
+    id="profile-banner"
+  ></div>
+
+  <div
+    class="p-avatar"
+    id="profile-avatar"
+  ></div>
+
+  <div
+    class="profile-name"
+    id="profile-name"
+  >
+    Gabriel
+  </div>
+
+  <div
+    class="profile-user"
+    id="profile-user"
+  >
+    @gabriel
+  </div>
+
+  <div class="box">
+
+    <div class="box-title">
+      Editar Perfil
+    </div>
+
+    <label class="input-label">
+      Nome
+    </label>
+
+    <input type="text" id="edit-name">
+
+    <label class="input-label">
+      Username
+    </label>
+
+    <input type="text" id="edit-user">
+
+    <label class="input-label">
+      Avatar
+    </label>
+
+    <input
+      type="file"
+      id="edit-avatar"
+      accept="image/*"
+    >
+
+    <label class="input-label">
+      Banner
+    </label>
+
+    <input
+      type="file"
+      id="edit-banner"
+      accept="image/*"
+    >
+
+    <button
+      class="btn-primary"
+      onclick="saveProfile()"
+    >
+      Salvar Perfil
+    </button>
+
+  </div>
+
+  <div class="section-title">
+    Minhas Obras
+  </div>
+
+  <div
+    id="profile-list"
+    class="hq-grid"
+  ></div>
+
+</section>
+
+<!-- =========================
+     READER
+========================= -->
+
+<section id="reader" class="screen">
+
+  <button
+    class="btn-primary"
+    onclick="navTo('inicio')"
+  >
+    ← Voltar
+  </button>
+
+  <div
+    id="reader-content"
+    style="margin-top:20px;"
+  ></div>
+
+</section>
+
+<!-- =========================
+     NAVBAR
+========================= -->
+
+<nav class="bottom-nav">
+
+  <div
+    class="nav-item active"
+    data-screen="inicio"
+  >
+
+    <div class="nav-icon">
+      🏠
+    </div>
+
+    <div class="nav-text">
+      Início
+    </div>
+
+  </div>
+
+  <div
+    class="nav-item"
+    data-screen="categorias"
+  >
+
+    <div class="nav-icon">
+      📚
+    </div>
+
+    <div class="nav-text">
+      Categorias
+    </div>
+
+  </div>
+
+  <div
+    class="nav-item"
+    data-screen="estudio"
+  >
+
+    <div class="nav-icon">
+      🎨
+    </div>
+
+    <div class="nav-text">
+      Estúdio
+    </div>
+
+  </div>
+
+  <div
+    class="nav-item"
+    data-screen="perfil"
+  >
+
+    <div class="nav-icon">
+      👤
+    </div>
+
+    <div class="nav-text">
+      Perfil
+    </div>
+
+  </div>
+
+</nav>
+
+<script type="module" src="app.js"></script>
+
+</body>
+</html

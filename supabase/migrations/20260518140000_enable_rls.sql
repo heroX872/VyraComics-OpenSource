@@ -1,31 +1,31 @@
 -- Habilita RLS em todas as tabelas
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE hqs   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE hqs      ENABLE ROW LEVEL SECURITY;
 
--- ── Policies: users ─────────────────────────────────────────────
-CREATE POLICY "users_select" ON users
+-- ── Policies: profiles ───────────────────────────────────────────
+CREATE POLICY "profiles_select" ON profiles
   FOR SELECT USING (true);
 
-CREATE POLICY "users_insert" ON users
-  FOR INSERT WITH CHECK (auth.uid()::text = id);
+CREATE POLICY "profiles_insert" ON profiles
+  FOR INSERT WITH CHECK (auth.uid() = id);
 
-CREATE POLICY "users_update" ON users
-  FOR UPDATE USING (auth.uid()::text = id);
+CREATE POLICY "profiles_update" ON profiles
+  FOR UPDATE USING (auth.uid() = id);
 
--- ── Policies: hqs ───────────────────────────────────────────────
+-- ── Policies: hqs ────────────────────────────────────────────────
 CREATE POLICY "hqs_select" ON hqs
   FOR SELECT USING (true);
 
 CREATE POLICY "hqs_insert" ON hqs
-  FOR INSERT WITH CHECK (auth.uid()::text = author_id);
+  FOR INSERT WITH CHECK (auth.uid()::text = "authorId");
 
 CREATE POLICY "hqs_update" ON hqs
-  FOR UPDATE USING (auth.uid()::text = author_id);
+  FOR UPDATE USING (auth.uid()::text = "authorId");
 
 CREATE POLICY "hqs_delete" ON hqs
-  FOR DELETE USING (auth.uid()::text = author_id);
+  FOR DELETE USING (auth.uid()::text = "authorId");
 
--- ── Storage: avatars ────────────────────────────────────────────
+-- ── Storage: avatars ─────────────────────────────────────────────
 DROP POLICY IF EXISTS "avatars_allow_insert" ON storage.objects;
 DROP POLICY IF EXISTS "avatars_allow_update" ON storage.objects;
 DROP POLICY IF EXISTS "avatars_allow_delete" ON storage.objects;

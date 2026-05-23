@@ -1,8 +1,5 @@
-// app.js
-
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-// Credenciais sincronizadas com o seu começar.html
 const SUPABASE_URL = "https://ihiuygpxoxttwmbwbpns.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Te0kRJCi7DbW21iEj9w6QA_iO9av2fR";
 
@@ -25,6 +22,12 @@ const NAV_MAP = {
   perfil: 3
 };
 
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
 async function init() {
   const { data: { session } } = await supabase.auth.getSession();
 
@@ -32,7 +35,7 @@ async function init() {
     setTimeout(async () => {
       const { data: { session: retrySession } } = await supabase.auth.getSession();
       if (!retrySession) {
-        window.location.replace("começar.html");
+        window.location.replace("index.html");
         return;
       }
       USER_ID = retrySession.user.id;
@@ -62,12 +65,12 @@ function startRealtime() {
 
 supabase.auth.onAuthStateChange((event) => {
   if (event === "SIGNED_OUT") {
-    window.location.replace("começar.html");
+    window.location.replace("index.html");
   }
 });
 
 // =========================================================================
-// EXPOSIÇÃO GLOBAL DE FUNÇÕES (Garante o funcionamento de todos os botões)
+// EXPOSIÇÃO GLOBAL
 // =========================================================================
 
 window.navTo = function(screen) {
@@ -82,7 +85,11 @@ window.filterHome = function(q) {
     renderHome(hqs);
     return;
   }
-  renderHome(hqs.filter(h => h.name.toLowerCase().includes(term)));
+  renderHome(hqs.filter(h =>
+    h.name.toLowerCase().includes(term) ||
+    (h.genre && h.genre.toLowerCase().includes(term)) ||
+    (h.authorHandle && h.authorHandle.toLowerCase().includes(term))
+  ));
 };
 
 window.clearSearch = function() {
@@ -91,14 +98,29 @@ window.clearSearch = function() {
   renderHome(hqs);
 };
 
-window.openHq = function(hqId) {
-  alert("Abrindo visualização da HQ ID: " + hqId);
+window.openHq = function(id) {
+  const hq = hqs.find(h => h.id == id);
+  if (!hq) return;
+
+  const content = document.getElementById("reader-content");
+  if (!content) return;
+
+  content.innerHTML = `
+    <img class="reader-cover" src="${escapeHtml(hq.cover)}">
+    <div class="reader-title">${escapeHtml(hq.name)}</div>
+    <div class="reader-author">${escapeHtml(hq.authorHandle || "@autor")}</div>
+    <div class="reader-synopsis">${escapeHtml(hq.synopsis || "Sem sinopse.")}</div>
+  `;
+
+  window.location.hash = "reader";
+  handleRoute();
 };
 
-window.createWork = async function() {
-  const name = document.getElementById("st-name").value.trim();
-  const genre = document.getElementById("st-genre").value;
-  const file = document.getElementById("st-cover-file").files[0];
+window.createHQ = async function() {
+  const name = document.getElementById("hq-name").value.trim();
+  const genre = document.getElementById("hq-genre").value;
+  const synopsis = document.getElementById("hq-synopsis").value.trim();
+  const file = document.getElementById("hq-cover").files[0];
 
   if (!name || !file) {
     alert("Preencha os dados da obra.");
@@ -112,7 +134,7 @@ window.createWork = async function() {
     .from("hqs")
     .insert([{
       id, name, genre, cover,
-      synopsis: "",
+      synopsis,
       authorHandle: user.user,
       authorId: USER_ID,
       chapters: []
@@ -120,30 +142,22 @@ window.createWork = async function() {
 
   if (error) {
     console.error(error);
+    alert("Erro ao publicar: " + error.message);
     return;
   }
 
-  document.getElementById("st-name").value = "";
-  document.getElementById("st-cover-file").value = "";
+  document.getElementById("hq-name").value = "";
+  document.getElementById("hq-synopsis").value = "";
+  document.getElementById("hq-cover").value = "";
   fetchHqs();
-};
-
-// Funções do Modal de Edição de Perfil
-window.openEditProfileModal = function() {
-  document.getElementById("edit-name").value = user.name;
-  document.getElementById("edit-username").value = user.user.replace("@", "");
-  document.getElementById("edit-modal").classList.add("active");
-};
-
-window.closeEditProfileModal = function() {
-  document.getElementById("edit-modal").classList.remove("active");
+  window.navTo("inicio");
 };
 
 window.saveProfile = async function() {
   const newName = document.getElementById("edit-name").value.trim();
-  const newUsername = document.getElementById("edit-username").value.trim();
-  const avatarFile = document.getElementById("edit-avatar-file").files[0];
-  const bannerFile = document.getElementById("edit-banner-file").files[0];
+  const newUsername = document.getElementById("edit-user").value.trim();
+  const avatarFile = document.getElementById("edit-avatar").files[0];
+  const bannerFile = document.getElementById("edit-banner").files[0];
 
   if (!newName || !newUsername) {
     alert("Nome e Arroba não podem ficar vazios.");
@@ -182,9 +196,11 @@ window.saveProfile = async function() {
   user.banner = finalBanner;
 
   renderProfile();
-  window.closeEditProfileModal();
+  alert("Perfil atualizado.");
 };
 
+// =========================================================================
+// NAVEGAÇÃO
 // =========================================================================
 
 function handleRoute() {
@@ -206,6 +222,17 @@ function handleRoute() {
 
 window.addEventListener("hashchange", handleRoute);
 
+document.querySelectorAll(".nav-item").forEach(el => {
+  el.addEventListener("click", () => {
+    const screen = el.dataset.screen;
+    if (screen) window.navTo(screen);
+  });
+});
+
+// =========================================================================
+// DADOS
+// =========================================================================
+
 async function fetchHqs() {
   const { data, error } = await supabase.from("hqs").select("*");
   if (error) {
@@ -223,16 +250,16 @@ function renderHome(list) {
   if (!el) return;
 
   if (!list.length) {
-    el.innerHTML = `<p>Nenhuma HQ encontrada.</p>`;
+    el.innerHTML = `<p style="color:var(--muted)">Nenhuma HQ encontrada.</p>`;
     return;
   }
 
   el.innerHTML = list.map(h => `
-    <div class="hq-card" onclick="openHq('${h.id}')">
-      <img class="hq-card-img" src="${h.cover}">
+    <div class="hq-card" onclick="openHq('${escapeHtml(h.id)}')">
+      <img class="hq-card-img" src="${escapeHtml(h.cover)}" alt="${escapeHtml(h.name)}">
       <div class="hq-card-body">
-        <div class="hq-card-title">${h.name}</div>
-        <div class="hq-card-sub">${h.authorHandle || "@autor"}</div>
+        <div class="hq-card-title">${escapeHtml(h.name)}</div>
+        <div class="hq-card-sub">${escapeHtml(h.authorHandle || "@autor")}</div>
       </div>
     </div>
   `).join("");
@@ -244,11 +271,16 @@ function renderStudio() {
 
   const mine = hqs.filter(h => h.authorId === USER_ID);
 
+  if (!mine.length) {
+    list.innerHTML = `<p style="color:var(--muted)">Você ainda não publicou HQs.</p>`;
+    return;
+  }
+
   list.innerHTML = mine.map(h => `
-    <div class="hq-card" onclick="openHq('${h.id}')">
-      <img class="hq-card-img" src="${h.cover}">
+    <div class="hq-card" onclick="openHq('${escapeHtml(h.id)}')">
+      <img class="hq-card-img" src="${escapeHtml(h.cover)}" alt="${escapeHtml(h.name)}">
       <div class="hq-card-body">
-        <div class="hq-card-title">${h.name}</div>
+        <div class="hq-card-title">${escapeHtml(h.name)}</div>
         <div class="hq-card-sub">Toque para editar</div>
       </div>
     </div>
@@ -256,16 +288,21 @@ function renderStudio() {
 }
 
 function renderProfileList() {
-  const list = document.getElementById("perfil-list");
+  const list = document.getElementById("profile-list");
   if (!list) return;
 
   const mine = hqs.filter(h => h.authorId === USER_ID);
 
+  if (!mine.length) {
+    list.innerHTML = `<p style="color:var(--muted)">Sem HQs ainda.</p>`;
+    return;
+  }
+
   list.innerHTML = mine.map(h => `
-    <div class="hq-card" onclick="openHq('${h.id}')">
-      <img class="hq-card-img" src="${h.cover}">
+    <div class="hq-card" onclick="openHq('${escapeHtml(h.id)}')">
+      <img class="hq-card-img" src="${escapeHtml(h.cover)}" alt="${escapeHtml(h.name)}">
       <div class="hq-card-body">
-        <div class="hq-card-title">${h.name}</div>
+        <div class="hq-card-title">${escapeHtml(h.name)}</div>
       </div>
     </div>
   `).join("");
@@ -288,20 +325,23 @@ async function loadUser() {
 }
 
 function renderProfile() {
-  const viewName = document.getElementById("view-name");
-  const viewUser = document.getElementById("view-user");
-  const viewAvatar = document.getElementById("view-avatar");
-  const viewBanner = document.getElementById("view-banner");
+  const nameEl = document.getElementById("profile-name");
+  const userEl = document.getElementById("profile-user");
+  const avatarEl = document.getElementById("profile-avatar");
+  const bannerEl = document.getElementById("profile-banner");
+  const editName = document.getElementById("edit-name");
+  const editUser = document.getElementById("edit-user");
 
-  if (viewName) viewName.textContent = user.name;
-  if (viewUser) viewUser.textContent = user.user;
+  if (nameEl) nameEl.textContent = user.name;
+  if (userEl) userEl.textContent = user.user;
+  if (editName) editName.value = user.name;
+  if (editUser) editUser.value = user.user.replace("@", "");
 
-  if (viewAvatar) {
-    viewAvatar.style.backgroundImage = user.avatar ? `url('${user.avatar}')` : "none";
+  if (avatarEl) {
+    avatarEl.style.backgroundImage = user.avatar ? `url('${user.avatar}')` : "";
   }
-
-  if (viewBanner) {
-    viewBanner.style.backgroundImage = user.banner ? `url('${user.banner}')` : "none";
+  if (bannerEl) {
+    bannerEl.style.backgroundImage = user.banner ? `url('${user.banner}')` : "";
   }
 }
 
@@ -338,6 +378,7 @@ async function uploadProfileImage(file, slot) {
   return supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl;
 }
 
-// Inicializações básicas de UI e dados
+// =========================================================================
+
 handleRoute();
 init();

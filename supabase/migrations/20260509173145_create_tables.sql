@@ -1,18 +1,18 @@
--- Tabela de usuários
-CREATE TABLE users (
-  id         TEXT PRIMARY KEY,
-  name       TEXT NOT NULL,
-  handle     TEXT NOT NULL,
-  avatar     TEXT,
-  banner     TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+-- Tabela de perfis (padrão Supabase)
+CREATE TABLE profiles (
+  id           UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  username     TEXT,
+  avatar_url   TEXT,
+  banner_url   TEXT,
+  display_name TEXT,
+  created_at   TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Tabela de HQs
 CREATE TABLE hqs (
   id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  author_id      TEXT REFERENCES users(id),
-  author_handle  TEXT,
+  "authorId"     TEXT NOT NULL,
+  "authorHandle" TEXT,
   name           TEXT NOT NULL,
   genre          TEXT,
   cover          TEXT,
@@ -21,6 +21,6 @@ CREATE TABLE hqs (
   created_at     TIMESTAMPTZ DEFAULT NOW()
 );
 
--- RLS desabilitado (sem autenticação por enquanto)
-ALTER TABLE users DISABLE ROW LEVEL SECURITY;
-ALTER TABLE hqs   DISABLE ROW LEVEL SECURITY;
+-- RLS desabilitado temporariamente (será ativado na migration seguinte)
+ALTER TABLE profiles DISABLE ROW LEVEL SECURITY;
+ALTER TABLE hqs      DISABLE ROW LEVEL SECURITY;
