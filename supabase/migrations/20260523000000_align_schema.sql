@@ -25,12 +25,15 @@ ALTER TABLE hqs RENAME COLUMN author_handle TO "authorHandle";
 -- 5. RLS: profiles
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "profiles_select" ON profiles;
 CREATE POLICY "profiles_select" ON profiles
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "profiles_insert" ON profiles;
 CREATE POLICY "profiles_insert" ON profiles
   FOR INSERT WITH CHECK (auth.uid() = id);
 
+DROP POLICY IF EXISTS "profiles_update" ON profiles;
 CREATE POLICY "profiles_update" ON profiles
   FOR UPDATE USING (auth.uid() = id);
 
@@ -56,11 +59,14 @@ DROP POLICY IF EXISTS "avatars_insert" ON storage.objects;
 DROP POLICY IF EXISTS "avatars_update" ON storage.objects;
 DROP POLICY IF EXISTS "avatars_delete" ON storage.objects;
 
+DROP POLICY IF EXISTS "avatars_insert" ON storage.objects;
 CREATE POLICY "avatars_insert" ON storage.objects
   FOR INSERT WITH CHECK (bucket_id = 'avatars' AND auth.uid() IS NOT NULL);
 
+DROP POLICY IF EXISTS "avatars_update" ON storage.objects;
 CREATE POLICY "avatars_update" ON storage.objects
   FOR UPDATE USING (bucket_id = 'avatars' AND auth.uid() IS NOT NULL);
 
+DROP POLICY IF EXISTS "avatars_delete" ON storage.objects;
 CREATE POLICY "avatars_delete" ON storage.objects
   FOR DELETE USING (bucket_id = 'avatars' AND auth.uid() IS NOT NULL);
