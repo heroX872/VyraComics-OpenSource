@@ -1,9 +1,20 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
 const SUPABASE_URL = "https://ihiuygpxoxttwmbwbpns.supabase.co";
-const SUPABASE_KEY = "sb_publishable_Te0kRJCi7DbW21iEj9w6QA_iO9av2fR";
+const SUPABASE_KEY =
+  "sb_publishable_Te0kRJCi7DbW21iEj9w6QA_iO9av2fR";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const escapeHtml = (s) => {
+  if (typeof s !== "string") return "";
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+};
 
 let hqs = [];
 let USER_ID = null;
@@ -48,8 +59,8 @@ async function init() {
     if (!session) {
       console.log("Usuário não autenticado");
 
-      if (!window.location.pathname.includes("começar.html")) {
-        window.location.href = "começar.html";
+      if (!window.location.pathname.includes("index.html")) {
+        window.location.href = "index.html";
       }
 
       return;
@@ -159,18 +170,18 @@ window.openHq = function(id) {
   const content = document.getElementById("reader-content");
 
   content.innerHTML = `
-    <img class="reader-cover" src="${hq.cover}">
+    <img class="reader-cover" src="${escapeHtml(hq.cover)}">
     
     <div class="reader-title">
-      ${hq.name}
+      ${escapeHtml(hq.name)}
     </div>
 
     <div class="reader-author">
-      ${hq.authorHandle || "@autor"}
+      ${escapeHtml(hq.authorHandle || "@autor")}
     </div>
 
     <div class="reader-synopsis">
-      ${hq.synopsis || "Sem sinopse disponível para esta obra."}
+      ${escapeHtml(hq.synopsis || "Sem sinopse disponível para esta obra.")}
     </div>
   `;
 
@@ -407,18 +418,18 @@ function renderHome(list) {
   }
 
   el.innerHTML = list.map(h => `
-    <div class="hq-card" onclick="openHq('${h.id}')">
+    <div class="hq-card" onclick="openHq('${escapeHtml(h.id)}')">
 
-      <img class="hq-card-img" src="${h.cover}">
+      <img class="hq-card-img" src="${escapeHtml(h.cover)}">
 
       <div class="hq-card-body">
 
         <div class="hq-card-title">
-          ${h.name}
+          ${escapeHtml(h.name)}
         </div>
 
         <div class="hq-card-sub">
-          ${h.authorHandle || "@autor"}
+          ${escapeHtml(h.authorHandle || "@autor")}
         </div>
 
       </div>
@@ -456,18 +467,18 @@ function renderCategoryGrid(list) {
   }
 
   el.innerHTML = filtered.map(h => `
-    <div class="hq-card" onclick="openHq('${h.id}')">
+    <div class="hq-card" onclick="openHq('${escapeHtml(h.id)}')">
 
-      <img class="hq-card-img" src="${h.cover}">
+      <img class="hq-card-img" src="${escapeHtml(h.cover)}">
 
       <div class="hq-card-body">
 
         <div class="hq-card-title">
-          ${h.name}
+          ${escapeHtml(h.name)}
         </div>
 
         <div class="hq-card-sub">
-          ${h.genre}
+          ${escapeHtml(h.genre)}
         </div>
 
       </div>
@@ -503,14 +514,14 @@ function renderStudio() {
   }
 
   list.innerHTML = mine.map(h => `
-    <div class="hq-card" onclick="openHq('${h.id}')">
+    <div class="hq-card" onclick="openHq('${escapeHtml(h.id)}')">
 
-      <img class="hq-card-img" src="${h.cover}">
+      <img class="hq-card-img" src="${escapeHtml(h.cover)}">
 
       <div class="hq-card-body">
 
         <div class="hq-card-title">
-          ${h.name}
+          ${escapeHtml(h.name)}
         </div>
 
         <div class="hq-card-sub">
@@ -551,14 +562,14 @@ function renderProfileList() {
   }
 
   list.innerHTML = mine.map(h => `
-    <div class="hq-card" onclick="openHq('${h.id}')">
+    <div class="hq-card" onclick="openHq('${escapeHtml(h.id)}')">
 
-      <img class="hq-card-img" src="${h.cover}">
+      <img class="hq-card-img" src="${escapeHtml(h.cover)}">
 
       <div class="hq-card-body">
 
         <div class="hq-card-title">
-          ${h.name}
+          ${escapeHtml(h.name)}
         </div>
 
       </div>
@@ -631,12 +642,12 @@ function renderProfile() {
 
   if (viewAvatar && user.avatar) {
     viewAvatar.style.backgroundImage =
-      `url('${user.avatar}')`;
+      `url('${escapeHtml(user.avatar)}')`;
   }
 
   if (viewBanner && user.banner) {
     viewBanner.style.backgroundImage =
-      `url('${user.banner}')`;
+      `url('${escapeHtml(user.banner)}')`;
   }
 }
 

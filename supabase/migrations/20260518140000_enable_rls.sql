@@ -22,15 +22,15 @@ CREATE POLICY "hqs_select" ON hqs
 
 DROP POLICY IF EXISTS "hqs_insert" ON hqs;
 CREATE POLICY "hqs_insert" ON hqs
-  FOR INSERT WITH CHECK (auth.uid()::text = author_id);
+  FOR INSERT WITH CHECK (auth.uid()::text = "authorId");
 
 DROP POLICY IF EXISTS "hqs_update" ON hqs;
 CREATE POLICY "hqs_update" ON hqs
-  FOR UPDATE USING (auth.uid()::text = author_id);
+  FOR UPDATE USING (auth.uid()::text = "authorId");
 
 DROP POLICY IF EXISTS "hqs_delete" ON hqs;
 CREATE POLICY "hqs_delete" ON hqs
-  FOR DELETE USING (auth.uid()::text = author_id);
+  FOR DELETE USING (auth.uid()::text = "authorId");
 
 -- ── Storage: avatars ─────────────────────────────────────────────
 DROP POLICY IF EXISTS "avatars_allow_insert" ON storage.objects;

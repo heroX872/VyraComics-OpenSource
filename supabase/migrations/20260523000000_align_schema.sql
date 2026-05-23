@@ -19,8 +19,20 @@ CREATE TABLE IF NOT EXISTS profiles (
 DROP TABLE IF EXISTS users CASCADE;
 
 -- 4. Renomeia colunas da hqs para lowerCamelCase (compatível com app.js)
-ALTER TABLE hqs RENAME COLUMN author_id     TO "authorId";
-ALTER TABLE hqs RENAME COLUMN author_handle TO "authorHandle";
+DO $$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'hqs' AND column_name = 'author_id'
+  ) THEN
+    ALTER TABLE hqs RENAME COLUMN author_id TO "authorId";
+  END IF;
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'hqs' AND column_name = 'author_handle'
+  ) THEN
+    ALTER TABLE hqs RENAME COLUMN author_handle TO "authorHandle";
+  END IF;
+END $$;
 
 -- 5. RLS: profiles
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
@@ -55,9 +67,6 @@ CREATE POLICY "hqs_delete" ON hqs
 DROP POLICY IF EXISTS "avatars_allow_insert" ON storage.objects;
 DROP POLICY IF EXISTS "avatars_allow_update" ON storage.objects;
 DROP POLICY IF EXISTS "avatars_allow_delete" ON storage.objects;
-DROP POLICY IF EXISTS "avatars_insert" ON storage.objects;
-DROP POLICY IF EXISTS "avatars_update" ON storage.objects;
-DROP POLICY IF EXISTS "avatars_delete" ON storage.objects;
 
 DROP POLICY IF EXISTS "avatars_insert" ON storage.objects;
 CREATE POLICY "avatars_insert" ON storage.objects
